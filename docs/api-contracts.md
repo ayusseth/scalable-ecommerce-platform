@@ -1,17 +1,17 @@
 # Authentication API
 ## Register
     POST /api/v1/auth/register
+request
 
----
-- request
     {
-        "name":"Ayush",
-        "email":"abc@gmail.com",
-        "password":"password"
+    "name":"Ayush",
+    "email":"abc@gmail.com",
+    "password":"password"
     }
 
 ---
-- response
+response
+
     {
         "message":"user register successfully"
     }
@@ -22,7 +22,8 @@
     POST /api/v1/auth/login
 
 ---
-- request
+request
+
     {
         "email":"abc@gmail.com",
         "password":"password"
@@ -30,7 +31,8 @@
 
 ---
 
-- response
+response
+
     {
         "accessToken":"JWT-Token",
         "tokenType":"Bearer"
@@ -58,7 +60,7 @@
 ---
 
 ## Create Products
-- Admins only
+Admins only
 
     POST /api/v1/products
 
@@ -71,7 +73,8 @@
 
 ---
 
-- request
+request
+
     {
         "productID":1,
         "quantity":2
@@ -90,7 +93,8 @@
 
 ---
 
-- response
+response
+
     {
         "orderId":123,
         "Status":"PENDING"
@@ -109,7 +113,8 @@
 ---
 
 # Standard Response Format
-- Success
+Success
+
     {
     "success": true,
     "message": "Product created",
@@ -117,7 +122,8 @@
     }
 
 ---
-- Error
+Error
+
     {
     "success": false,
     "message": "Product not found",
@@ -127,7 +133,8 @@
 ---
 
 # Global Error Strategy
-- Handle
+Handle
+
     ResourceNotFoundException
     ValidationException
     AuthenticationException
