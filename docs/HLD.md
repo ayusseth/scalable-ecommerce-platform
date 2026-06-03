@@ -1,75 +1,78 @@
 1. System Architecture
 - Modular Monoloith
-2. Component Diagram
 ---
+2. Component Diagram
 graph LR
 
 User[User Browser]
 
-User --> Frontend
+    User --> Frontend
 
-Frontend[React]
+    Frontend[React]
 
-Frontend --> Nginx
+    Frontend --> Nginx
 
-Nginx --> Backend
+    Nginx --> Backend
 
-Backend[Spring Boot]
+    Backend[Spring Boot]
 
-Backend --> PostgreSQL
-Backend --> Redis
+    Backend --> PostgreSQL
+    Backend --> Redis
 
-Backend --> Kafka
+    Backend --> Kafka
 
-Kafka --> NotificationService
+    Kafka --> NotificationService
 
-NotificationService --> EmailProvider
+    NotificationService --> EmailProvider
 
-Backend --> PaymentGateway
+    Backend --> PaymentGateway
 
-Backend --> Prometheus
+    Backend --> Prometheus
 
-Prometheus --> Grafana
+    Prometheus --> Grafana
+    Backend --> ELK
 
-Backend --> ELK
 ---
 3. Authentication Flow
----
+
 graph LR
 
 User[User Browser]
 
-User --> Frontend
+    User --> Frontend
 
-Frontend[React]
+    Frontend[React]
 
-Frontend --> POST/auth/login
+    Frontend --> POST/auth/login
 
-POST/auth/login --> Spring-Security
+    POST/auth/login --> Spring-Security
 
 
-Spring-Security --> AuthenticationManager
-AuthenticationManager --> Database
+    Spring-Security --> AuthenticationManager
+    AuthenticationManager --> Database
 
-Database --> JWT-Token
+    Database --> JWT-Token
 
-JWT-Token --> Frontend
+    JWT-Token --> Frontend
+
 ---
 ## Subsequent Request
----
+
 graph LR
 
-JWT-Token --> Authorization-Header
+    JWT-Token --> Authorization-Header
 
-Authorization-Header --> JWT-Filter
+    Authorization-Header --> JWT-Filter
 
-JWT-Filter --> Token-Validation
-Token-Validation --> Security-Context
-Security-Context --> Controller-Access
+    JWT-Filter --> Token-Validation
+    Token-Validation --> Security-Context
+    Security-Context --> Controller-Access
+
 ---
 4. Product Fetch Flow
----
+
 flowchart LR
+
     Client[Client] --> API[Spring Boot API]
 
     API --> Redis[(Redis Cache)]
@@ -83,75 +86,83 @@ flowchart LR
     CacheUpdate --> Response
 ---
 5. Checkout Flow
----
+
 flowchart TD
+
     A[Validate Cart] --> B[Create Order]
     B --> C[Reserve Inventory]
     C --> D[Process Payment]
     D --> E[Update Order Status]
     E --> F[Publish Order Event]
     F --> G[Send Notification]
+
 ---
 6. Cahce Flow
 ## Caheable Data
----
-Products
-Categories
-Product details
+
+    Products
+    Categories
+    Product details
+
 ---
 ## Not Cacheable
----
-Payments
-Orders
-User Balence
+
+    Payments
+    Orders
+    User Balence
+
 --- 
 # Flow
 ## Cacheing Strategy
 - Cache Aside Pattern
 ---
-Read Redis
+    Read Redis
       ↓
-Miss
+    Miss
       ↓
-Read DB
+    Read DB
       ↓
-Write Redis
+    Write Redis
       ↓
-Return Response
+    Return Response
+
 ---
 7. Deployment Architecture
-- Development
+# Development
+
+    React
+    Spring Boot
+    PostgreSQL
+    Redis
+    Docker Compose
+
 ---
-React
-Spring Boot
-PostgreSQL
-Redis
-Docker Compose
----
-- Production
----
-Internet
-    ↓
-Load Balancer
-    ↓
-Nginx
-    ↓
-Spring Boot Containers
-    ↓
-PostgreSQL
-Redis
-Kafka
+# Production
+
+    Internet
+      ↓
+    Load Balancer
+      ↓
+    Nginx
+      ↓
+    Spring Boot Containers
+      ↓
+    PostgreSQL
+    Redis
+    Kafka
+
 ---
 8. Monitoring Architecture
-- Metrics
----
-Spring Boot
-     ↓
-Micrometer
-     ↓
-Prometheus
-     ↓
-Grafana
+# Metrics
+
+    Spring Boot
+       ↓
+    Micrometer
+       ↓
+    Prometheus
+       ↓
+    Grafana
+
 ---
 ## Track
 - API Latency
@@ -160,14 +171,15 @@ Grafana
 - memory usage
 - CPU usage
 ## Logs
----
-Application Logs
-      ↓
-Logstash
-      ↓
-Elasticsearch
-      ↓
-Kibana
+
+    Application Logs
+       ↓
+    Logstash
+       ↓
+    Elasticsearch
+       ↓
+    Kibana
+
 ---
 10. Failure Strategy
 ## Scenario 1
