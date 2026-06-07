@@ -1,20 +1,14 @@
 package com.ayush.ecommerce.module.auth.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.HashSet;
 import java.util.Set;
 @Entity
-@Table(name ="users",
-        uniqueConstraints = {
-        @UniqueConstraint(columnNames = "email")
-        }
-        )
-@Data
+@Table(name ="users")
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -35,7 +29,7 @@ public class User
 
     @Builder.Default    //because primitive booleans default to false. Newly registered users should normally be enabled = true by default.
     @Column(nullable = false)
-    private boolean enabled;
+    private boolean enabled = true;
     //The enabled field allows us to deactivate accounts without deleting user records.
     // This helps preserve historical data such as orders and payments while preventing the user from authenticating.
     // It also supports use cases like account suspension, email verification, and employee off-boarding.
@@ -46,5 +40,6 @@ public class User
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
+    @Builder.Default
     private Set<Role> roles = new HashSet<>();
 }
