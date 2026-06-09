@@ -10,7 +10,7 @@ spring:
   jpa:
     hibernate:
       ddl-auto: validate
-      open-in-view: false
+    open-in-view: false
 
   flyway:
     enabled: false
@@ -27,3 +27,7 @@ management:
 logging:
   level:
     org.springframework.security: DEBUG
+
+jwt:
+  secret: 7XhLk93mPqRt5VzY8NwKs2BdLmQe4GhY7XhLk93mPqRt5VzY8NwKs2BdLmQe4GhY
+  expiration: 86400000
