@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Function;
 
 @Service
@@ -31,6 +33,26 @@ public class JwtService
 
     public String extractUsername(String token){
         return extractClaim(token, Claims::getSubject);
+    }
+
+    public String generateToken(String email){
+        return  generateToken(new HashMap<>(), email);
+    }
+
+    public String generateToken(Map<String, Object> extraClaims,
+                                String email){
+        return Jwts.builder()
+                .claims(extraClaims)
+                .subject(email)
+                .issuedAt(new Date())
+                .expiration(
+                        new Date(
+                                System.currentTimeMillis()
+                                + jwtExpiration
+                        )
+                )
+                .signWith(secretKey)
+                .compact();
     }
 
     public <T> T extractClaim(
