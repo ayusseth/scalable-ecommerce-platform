@@ -1,5 +1,7 @@
 package com.ayush.ecommerce.module.auth.controller;
 
+import com.ayush.ecommerce.module.auth.dto.LoginRequest;
+import com.ayush.ecommerce.module.auth.dto.LoginResponse;
 import com.ayush.ecommerce.module.auth.dto.RegisterRequest;
 import com.ayush.ecommerce.module.auth.dto.RegisterResponse;
 import com.ayush.ecommerce.module.auth.service.AuthService;
@@ -26,4 +28,12 @@ public class AuthController
 
     // without @Valid
     //@NotBlank, @Email, @Size never executed
+
+    @PostMapping("/login")
+    public LoginResponse login(
+            @Valid @RequestBody LoginRequest request
+            ){
+        System.out.println("Login API hit....");
+        return authService.login(request);
+    }
 }
