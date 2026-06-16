@@ -2,6 +2,7 @@ package com.ayush.ecommerce.module.product.controller;
 
 import com.ayush.ecommerce.module.product.dto.CreateProductRequest;
 import com.ayush.ecommerce.module.product.dto.ProductResponse;
+import com.ayush.ecommerce.module.product.dto.UpdateProductRequest;
 import com.ayush.ecommerce.module.product.service.ProductService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -21,5 +22,18 @@ public class ProductController {
             @Valid @RequestBody CreateProductRequest request
             ){
         return productService.createProduct(request);
+    }
+
+    @PutMapping("/{id}")
+    public ProductResponse updateProduct(
+            @PathVariable Long id,
+            @Valid @RequestBody
+            UpdateProductRequest request){
+        return productService.updateProduct(id, request);
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteProduct(@PathVariable Long id){
+        productService.deleteProduct(id);
     }
 }

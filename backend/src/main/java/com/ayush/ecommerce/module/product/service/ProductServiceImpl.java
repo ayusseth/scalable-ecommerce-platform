@@ -4,6 +4,7 @@ package com.ayush.ecommerce.module.product.service;
 import com.ayush.ecommerce.module.product.dto.CreateProductRequest;
 import com.ayush.ecommerce.module.product.dto.ProductDetailResponse;
 import com.ayush.ecommerce.module.product.dto.ProductResponse;
+import com.ayush.ecommerce.module.product.dto.UpdateProductRequest;
 import com.ayush.ecommerce.module.product.entity.Product;
 import com.ayush.ecommerce.module.product.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
@@ -62,7 +63,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public ProductDetailResponse getProductById(Long productId) {
         Product product = productRepository
-                .findById(productId)
+                .findByIdAndActiveTrue(productId)
                 .orElseThrow(()->new RuntimeException(
                         "Product not found"
                 ));
@@ -74,5 +75,52 @@ public class ProductServiceImpl implements ProductService {
                 .stockQuantity(product.getStockQuantity())
                 .active(product.isActive())
                 .build();
+    }
+
+    @Override
+    public ProductResponse updateProduct(Long productId, UpdateProductRequest request) {
+        Product product = productRepository
+                .findById(productId)
+                .orElseThrow(()->
+                        new RuntimeException(
+                                "Product not found"
+                        ));
+        product.setName(request.getName());
+        product.setDescription(request.getDescription());
+        product.setPrice(request.getPrice());
+        product.setStockQuantity(request.getStockQuantity());
+
+        product.setUpdatedAt(
+                LocalDateTime.now()
+        );
+
+        product.setUpdatedAt(
+                LocalDateTime.now()
+        );
+        product.setUpdatedAt(LocalDateTime.now());
+
+        Product updatedProduct = productRepository.save(product);
+
+        return ProductResponse.builder()
+                .id(updatedProduct.getId())
+                .name(updatedProduct.getName())
+                .description(updatedProduct.getDescription())
+                .price(updatedProduct.getPrice())
+                .stockQuantity(updatedProduct.getStockQuantity())
+                .active(updatedProduct.isActive())
+                .build();
+    }
+
+    //soft delete method is below
+    @Override
+    public void deleteProduct(Long productId) {
+        Product product = productRepository
+                .findById(productId)
+                .orElseThrow(()->new RuntimeException(
+                        "Product not found"
+                ));
+        product.setActive(false);
+        product.setUpdatedAt(LocalDateTime.now());
+        productRepository.save(product);
     }
 }
