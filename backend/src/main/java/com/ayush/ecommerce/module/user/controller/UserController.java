@@ -12,4 +12,9 @@ public class UserController
     public String currentUser(Authentication authentication){
         return authentication.getName();
     }
+
+    @GetMapping("/api/v1/user/profile")
+    public String profile(){
+        return "User Profile";
+    }
 }
