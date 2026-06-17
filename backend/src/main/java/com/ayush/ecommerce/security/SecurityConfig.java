@@ -44,13 +44,15 @@ public class SecurityConfig
                                 "/api/v1/user/**"
                         ).hasAnyRole("USER", "ADMIN")
                         .requestMatchers(
-                                HttpMethod.GET,
-                                "/api/v1/products/**"
+                        HttpMethod.GET,
+                        "/api/v1/products/**"
                         ).permitAll()
                         .requestMatchers(
-                                HttpMethod.GET,
-                                "/api/v1/categories/**"
+                        HttpMethod.GET,
+                        "/api/v1/categories/**"
                         ).permitAll()
+                        .requestMatchers("/api/v1/orders/**")
+                        .hasAnyRole("USER","ADMIN")
                         .anyRequest()
                         .authenticated()
                 )

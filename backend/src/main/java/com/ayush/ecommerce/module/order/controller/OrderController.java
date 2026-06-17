@@ -1,0 +1,31 @@
+package com.ayush.ecommerce.module.order.controller;
+
+import com.ayush.ecommerce.module.order.dto.CreateOrderRequest;
+import com.ayush.ecommerce.module.order.dto.OrderResponse;
+import com.ayush.ecommerce.module.order.service.OrderService;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/api/v1/orders")
+@RequiredArgsConstructor
+public class OrderController {
+
+    private final OrderService orderService;
+
+    @PostMapping
+    public OrderResponse createOrder(
+            Authentication authentication,
+            @Valid @RequestBody CreateOrderRequest request
+    ) {
+
+        String email = authentication.getName();
+
+        return orderService.createOrder(
+                email,
+                request
+        );
+    }
+}
