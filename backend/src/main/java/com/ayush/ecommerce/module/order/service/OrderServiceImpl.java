@@ -8,6 +8,7 @@ import com.ayush.ecommerce.module.order.dto.CreateOrderRequest;
 import com.ayush.ecommerce.module.order.dto.OrderItemResponse;
 import com.ayush.ecommerce.module.order.dto.OrderResponse;
 import com.ayush.ecommerce.module.order.entity.Order;
+import com.ayush.ecommerce.module.order.entity.OrderItem;
 import com.ayush.ecommerce.module.order.entity.OrderStatus;
 import com.ayush.ecommerce.module.order.repository.OrderItemRepository;
 import com.ayush.ecommerce.module.order.repository.OrderRepository;
@@ -59,6 +60,7 @@ public class OrderServiceImpl implements OrderService{
 
         BigDecimal totalAmount = BigDecimal.ZERO;
         List<OrderItemResponse> itemResponses = new ArrayList<>();
+        List<OrderItem> orderItems = new ArrayList<>();
 
         for(var itemRequest: request.getItems()){
             Product product = productMap.get(itemRequest.getProductId());
@@ -74,6 +76,14 @@ public class OrderServiceImpl implements OrderService{
                             .unitPrice(product.getPrice())
                             .subtotal(subtotal)
                     .build());
+            orderItems.add(
+                    OrderItem.builder()
+                            .product(product)
+                            .quantity(itemRequest.getQuantity())
+                            .unitPrice(product.getPrice())
+                            .subtotal(subtotal)
+                            .build()
+            );
         }
 
         String orderNumber = "ORD-"+ UUID.randomUUID()
@@ -91,6 +101,11 @@ public class OrderServiceImpl implements OrderService{
                 .build();
 
         Order savedOrder = orderRepository.save(order);
+
+        for(OrderItem orderItem:orderItems){
+            orderItem.setOrder(savedOrder);
+            orderItemRepository.save(orderItem);
+        }
 
 
         return OrderResponse.builder()
