@@ -10,6 +10,10 @@ import com.ayush.ecommerce.module.product.entity.Product;
 import com.ayush.ecommerce.module.product.repository.CategoryRepository;
 import com.ayush.ecommerce.module.product.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -40,16 +44,7 @@ public class ProductServiceImpl implements ProductService {
 
         Product savedProduct = productRepository.save(product);
 
-        return ProductResponse.builder()
-                .id(savedProduct.getId())
-                .name(savedProduct.getName())
-                .description(savedProduct.getDescription())
-                .price(savedProduct.getPrice())
-                .stockQuantity(savedProduct.getStockQuantity())
-                .active(savedProduct.isActive())
-                .categoryId(savedProduct.getCategory().getId())
-                .categoryName(savedProduct.getCategory().getName())
-                .build();
+        return mapToResponse(savedProduct);
     }
 
     @Override
@@ -108,16 +103,7 @@ public class ProductServiceImpl implements ProductService {
         );
         Product updatedProduct = productRepository.save(product);
 
-        return ProductResponse.builder()
-                .id(updatedProduct.getId())
-                .name(updatedProduct.getName())
-                .description(updatedProduct.getDescription())
-                .price(updatedProduct.getPrice())
-                .stockQuantity(updatedProduct.getStockQuantity())
-                .active(updatedProduct.isActive())
-                .categoryId(product.getCategory().getId())
-                .categoryName(product.getCategory().getName())
-                .build();
+        return mapToResponse(updatedProduct);
     }
 
     //soft delete method is below
@@ -131,5 +117,51 @@ public class ProductServiceImpl implements ProductService {
         product.setActive(false);
         product.setUpdatedAt(LocalDateTime.now());
         productRepository.save(product);
+    }
+
+    private ProductResponse mapToResponse(Product product){
+        return ProductResponse.builder()
+                .id(product.getId())
+                .name(product.getName())
+                .description(product.getDescription())
+                .price(product.getPrice())
+                .stockQuantity(product.getStockQuantity())
+                .active(product.isActive())
+                .categoryId(product.getCategory().getId())
+                .categoryName(product.getCategory().getName())
+                .build();
+    }
+
+    @Override
+    public Page<ProductResponse> getProducts(int page, int size, String sortBy, String direction) {
+        Sort sort = direction.equalsIgnoreCase("desc")
+                ? Sort.by(sortBy).descending()
+                : Sort.by(sortBy).ascending();
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        return productRepository
+                .findByActiveTrue(pageable)
+                .map(this::mapToResponse);
+    }
+
+
+    @Override
+    public List<ProductResponse> searchProducts(String keyword) {
+        return productRepository
+                .findByNameContainingIgnoreCaseAndActiveTrue(keyword)
+                .stream()
+                .map(this::mapToResponse)
+                .toList();
+
+    }
+
+
+    @Override
+    public List<ProductResponse> getProductsByCategory(Long categoryId) {
+        return productRepository
+                .findByCategoryIdAndActiveTrue(categoryId)
+                .stream()
+                .map(this::mapToResponse)
+                .toList();
     }
 }
