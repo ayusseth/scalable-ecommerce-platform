@@ -5,7 +5,9 @@ import com.ayush.ecommerce.module.product.dto.CreateProductRequest;
 import com.ayush.ecommerce.module.product.dto.ProductDetailResponse;
 import com.ayush.ecommerce.module.product.dto.ProductResponse;
 import com.ayush.ecommerce.module.product.dto.UpdateProductRequest;
+import com.ayush.ecommerce.module.product.entity.Category;
 import com.ayush.ecommerce.module.product.entity.Product;
+import com.ayush.ecommerce.module.product.repository.CategoryRepository;
 import com.ayush.ecommerce.module.product.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,14 +20,19 @@ import java.util.List;
 public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
+    private final CategoryRepository categoryRepository;
 
     @Override
     public ProductResponse createProduct(CreateProductRequest request) {
+        Category category = categoryRepository
+                .findById(request.getCategoryId())
+                .orElseThrow(()-> new RuntimeException("Category not found"));
         Product product = Product.builder()
                 .name(request.getName())
                 .description(request.getDescription())
                 .price(request.getPrice())
                 .stockQuantity(request.getStockQuantity())
+                .category(category)
                 .active(true)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
@@ -93,12 +100,6 @@ public class ProductServiceImpl implements ProductService {
         product.setUpdatedAt(
                 LocalDateTime.now()
         );
-
-        product.setUpdatedAt(
-                LocalDateTime.now()
-        );
-        product.setUpdatedAt(LocalDateTime.now());
-
         Product updatedProduct = productRepository.save(product);
 
         return ProductResponse.builder()

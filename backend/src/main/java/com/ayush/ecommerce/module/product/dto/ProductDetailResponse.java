@@ -14,4 +14,6 @@ public class ProductDetailResponse {
     private BigDecimal price;
     private Integer stockQuantity;
     private boolean active;
+    private Long categoryId;
+    private String categoryName;
 }
