@@ -1,6 +1,8 @@
 package com.ayush.ecommerce.module.product.service;
 
 
+import com.ayush.ecommerce.exception.CategoryNotFoundException;
+import com.ayush.ecommerce.exception.ProductNotFoundException;
 import com.ayush.ecommerce.module.product.dto.CreateProductRequest;
 import com.ayush.ecommerce.module.product.dto.ProductDetailResponse;
 import com.ayush.ecommerce.module.product.dto.ProductResponse;
@@ -30,7 +32,7 @@ public class ProductServiceImpl implements ProductService {
     public ProductResponse createProduct(CreateProductRequest request) {
         Category category = categoryRepository
                 .findById(request.getCategoryId())
-                .orElseThrow(()-> new RuntimeException("Category not found"));
+                .orElseThrow(()-> new CategoryNotFoundException("Category not found"));
         Product product = Product.builder()
                 .name(request.getName())
                 .description(request.getDescription())
@@ -70,7 +72,7 @@ public class ProductServiceImpl implements ProductService {
     public ProductDetailResponse getProductById(Long productId) {
         Product product = productRepository
                 .findByIdAndActiveTrue(productId)
-                .orElseThrow(()->new RuntimeException(
+                .orElseThrow(()->new ProductNotFoundException(
                         "Product not found"
                 ));
         return ProductDetailResponse.builder()
