@@ -5,10 +5,9 @@ import com.ayush.ecommerce.module.product.dto.CreateCategoryRequest;
 import com.ayush.ecommerce.module.product.service.CategoryService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
+
 
 @RestController
 @RequestMapping("/api/v1/admin/categories")
@@ -22,5 +21,17 @@ public class CategoryController {
             CreateCategoryRequest request
     ){
         return categoryService.createCategory(request);
+    }
+    @PutMapping("/{id}")
+    public CategoryResponse updateCategory(@PathVariable Long id,
+                                           @Valid @RequestBody CreateCategoryRequest request){
+        return categoryService.updateCategory(id, request);
+    }
+
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteCategories(@PathVariable Long id){
+        categoryService.deleteCategory(id);
     }
 }
