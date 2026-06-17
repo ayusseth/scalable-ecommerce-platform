@@ -7,10 +7,8 @@ import com.ayush.ecommerce.module.product.dto.ProductDetailResponse;
 import com.ayush.ecommerce.module.product.dto.ProductResponse;
 import com.ayush.ecommerce.module.product.service.ProductService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.data.domain.Page;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -28,5 +26,28 @@ public class ProductCatalogController {
     @GetMapping("/{id}")
     public ProductDetailResponse getProductById(@PathVariable Long id){
         return productService.getProductById(id);
+    }
+
+
+    @GetMapping("/paged")
+    public Page<ProductResponse> getProducts(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "asc") String direction
+    ){
+        return productService.getProducts(page,size,sortBy, direction);
+    }
+
+    @GetMapping("/search")
+    public List<ProductResponse> searchProducts(@RequestParam String keyword){
+        return productService.searchProducts(keyword);
+    }
+
+    
+
+    @GetMapping("/category/{categoryId}")
+    public List<ProductResponse> getProductsByCategory(@PathVariable Long categoryId){
+        return productService.getProductsByCategory(categoryId);
     }
 }
