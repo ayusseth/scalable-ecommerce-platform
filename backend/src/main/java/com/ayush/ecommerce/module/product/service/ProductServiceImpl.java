@@ -47,6 +47,8 @@ public class ProductServiceImpl implements ProductService {
                 .price(savedProduct.getPrice())
                 .stockQuantity(savedProduct.getStockQuantity())
                 .active(savedProduct.isActive())
+                .categoryId(savedProduct.getCategory().getId())
+                .categoryName(savedProduct.getCategory().getName())
                 .build();
     }
 
@@ -63,6 +65,8 @@ public class ProductServiceImpl implements ProductService {
                                 .price(product.getPrice())
                                 .stockQuantity(product.getStockQuantity())
                                 .active(product.isActive())
+                                .categoryId(product.getCategory().getId())
+                                .categoryName(product.getCategory().getName())
                                 .build()
                 ).toList();
     }
@@ -81,6 +85,8 @@ public class ProductServiceImpl implements ProductService {
                 .price(product.getPrice())
                 .stockQuantity(product.getStockQuantity())
                 .active(product.isActive())
+                .categoryId(product.getCategory().getId()                )
+                .categoryName(product.getCategory().getName()                )
                 .build();
     }
 
@@ -109,6 +115,8 @@ public class ProductServiceImpl implements ProductService {
                 .price(updatedProduct.getPrice())
                 .stockQuantity(updatedProduct.getStockQuantity())
                 .active(updatedProduct.isActive())
+                .categoryId(product.getCategory().getId())
+                .categoryName(product.getCategory().getName())
                 .build();
     }
 
