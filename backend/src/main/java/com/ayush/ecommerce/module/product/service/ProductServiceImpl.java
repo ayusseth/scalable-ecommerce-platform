@@ -18,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -163,6 +164,38 @@ public class ProductServiceImpl implements ProductService {
         return productRepository
                 .findByCategoryIdAndActiveTrue(categoryId)
                 .stream()
+                .map(this::mapToResponse)
+                .toList();
+    }
+
+    @Override
+    public List<ProductResponse> filterProducts(
+            Long categoryId,
+            BigDecimal minPrice,
+            BigDecimal maxPrice
+    ) {
+
+        List<Product> products;
+
+        if (categoryId != null) {
+
+            products = productRepository
+                    .findByCategoryIdAndPriceBetweenAndActiveTrue(
+                            categoryId,
+                            minPrice,
+                            maxPrice
+                    );
+
+        } else {
+
+            products = productRepository
+                    .findByPriceBetweenAndActiveTrue(
+                            minPrice,
+                            maxPrice
+                    );
+        }
+
+        return products.stream()
                 .map(this::mapToResponse)
                 .toList();
     }

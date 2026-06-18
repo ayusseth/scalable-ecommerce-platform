@@ -6,6 +6,7 @@ import com.ayush.ecommerce.module.product.dto.ProductResponse;
 import com.ayush.ecommerce.module.product.dto.UpdateProductRequest;
 import org.springframework.data.domain.Page;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public interface ProductService {
@@ -29,4 +30,10 @@ public interface ProductService {
     List<ProductResponse> searchProducts(String keyword);
 
     List<ProductResponse> getProductsByCategory(Long categoryId);
+
+    List<ProductResponse> filterProducts(
+            Long categoryId,
+            BigDecimal minPrice,
+            BigDecimal maxPrice
+    );
 }

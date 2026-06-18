@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -49,5 +50,23 @@ public class ProductCatalogController {
     @GetMapping("/category/{categoryId}")
     public List<ProductResponse> getProductsByCategory(@PathVariable Long categoryId){
         return productService.getProductsByCategory(categoryId);
+    }
+
+    @GetMapping("/filter")
+    public List<ProductResponse> filterProducts(
+
+            @RequestParam(required = false)
+            Long categoryId,
+            @RequestParam
+            BigDecimal minPrice,
+            @RequestParam
+            BigDecimal maxPrice
+    ) {
+
+        return productService.filterProducts(
+                categoryId,
+                minPrice,
+                maxPrice
+        );
     }
 }
