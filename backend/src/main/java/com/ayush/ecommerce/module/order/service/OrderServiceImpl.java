@@ -99,6 +99,7 @@ public class OrderServiceImpl implements OrderService{
                             .build()
             );
         }
+        productRepository.saveAll(products);
 
         String orderNumber = "ORD-"+ UUID.randomUUID()
                 .toString()
@@ -152,10 +153,7 @@ public class OrderServiceImpl implements OrderService{
     @Override
     @Transactional(readOnly = true)
     public OrderResponse getOrderDetails(String userEmail, String orderNumber) {
-
-        System.out.println("USER EMAIL = " + userEmail);
-        System.out.println("ORDER NUMBER = " + orderNumber);
-
+        
         Order order = orderRepository
                 .findByOrderNumber(orderNumber)
                 .orElseThrow(()-> new OrderNotFoundException("Order not found"));
