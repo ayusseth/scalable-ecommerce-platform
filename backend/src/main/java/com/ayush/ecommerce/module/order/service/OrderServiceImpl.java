@@ -9,6 +9,7 @@ import com.ayush.ecommerce.module.auth.repository.UserRepository;
 import com.ayush.ecommerce.module.order.dto.CreateOrderRequest;
 import com.ayush.ecommerce.module.order.dto.OrderItemResponse;
 import com.ayush.ecommerce.module.order.dto.OrderResponse;
+import com.ayush.ecommerce.module.order.dto.UpdateOrderStatusRequest;
 import com.ayush.ecommerce.module.order.entity.Order;
 import com.ayush.ecommerce.module.order.entity.OrderItem;
 import com.ayush.ecommerce.module.order.entity.OrderStatus;
@@ -181,6 +182,27 @@ public class OrderServiceImpl implements OrderService{
                 .status(order.getStatus())
                 .totalAmount(order.getTotalAmount())
                 .items(itemResponses)
+                .build();
+
+    }
+
+    @Override
+    @Transactional
+    public OrderResponse updateOrderStatus(String orderNumber, UpdateOrderStatusRequest request) {
+
+        Order order = orderRepository
+                .findByOrderNumber(orderNumber)
+                .orElseThrow(()-> new OrderNotFoundException("Order not fond"));
+        order.setStatus(request.getStatus());
+        order.setUpdatedAt(LocalDateTime.now());
+
+        Order savedOrder = orderRepository.save(order);
+
+        return OrderResponse.builder()
+                .orderId(savedOrder.getId())
+                .status(savedOrder.getStatus())
+                .totalAmount(savedOrder.getTotalAmount())
+                .items(List.of())
                 .build();
 
     }
