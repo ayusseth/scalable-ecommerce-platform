@@ -1,5 +1,6 @@
 package com.ayush.ecommerce.module.order.service;
 
+import com.ayush.ecommerce.exception.OrderNotFoundException;
 import com.ayush.ecommerce.exception.ProductNotFoundException;
 import com.ayush.ecommerce.exception.UserNotFoundException;
 import com.ayush.ecommerce.module.auth.entity.User;
@@ -14,6 +15,7 @@ import com.ayush.ecommerce.module.order.repository.OrderItemRepository;
 import com.ayush.ecommerce.module.order.repository.OrderRepository;
 import com.ayush.ecommerce.module.product.entity.Product;
 import com.ayush.ecommerce.module.product.repository.ProductRepository;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -118,6 +120,7 @@ public class OrderServiceImpl implements OrderService{
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<OrderResponse> getMyOrders(String userEmail) {
         return orderRepository
                 .findByUserEmailOrderByCreatedAtDesc(userEmail)
@@ -132,5 +135,42 @@ public class OrderServiceImpl implements OrderService{
                                 .build()
                 )
                 .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public OrderResponse getOrderDetails(String userEmail, String orderNumber) {
+
+        System.out.println("USER EMAIL = " + userEmail);
+        System.out.println("ORDER NUMBER = " + orderNumber);
+
+        Order order = orderRepository
+                .findByOrderNumber(orderNumber)
+                .orElseThrow(()-> new OrderNotFoundException("Order not found"));
+        if(!order.getUser()
+                .getEmail()
+                .equals(userEmail)){
+            throw new OrderNotFoundException("Order not found");
+        }
+        List<OrderItemResponse> itemResponses = orderItemRepository
+                .findByOrderOrderNumber(orderNumber)
+                .stream()
+                .map(item-> OrderItemResponse.builder()
+                        .productId(item.getProduct().getId())
+                        .productName(item.getProduct().getName())
+                        .quantity(item.getQuantity())
+                        .unitPrice(item.getUnitPrice())
+                        .subtotal(item.getSubtotal())
+                        .build()
+                ).toList();
+
+        return OrderResponse.builder()
+                .orderId(order.getId())
+                .orderNumber(order.getOrderNumber())
+                .status(order.getStatus())
+                .totalAmount(order.getTotalAmount())
+                .items(itemResponses)
+                .build();
+
     }
 }

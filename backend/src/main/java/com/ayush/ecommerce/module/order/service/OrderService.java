@@ -12,4 +12,6 @@ public interface OrderService {
     );
 
     List<OrderResponse> getMyOrders(String userEmail);
+
+    OrderResponse getOrderDetails(String userEmail, String orderNumber);
 }

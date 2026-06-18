@@ -37,4 +37,9 @@ public class OrderController {
     public List<OrderResponse> getMyOrders(Authentication authentication){
         return orderService.getMyOrders(authentication.getName());
     }
+
+    @GetMapping("/{orderNumber}")
+    public OrderResponse getOrderDetails(Authentication authentication, @PathVariable String orderNumber){
+        return orderService.getOrderDetails(authentication.getName(), orderNumber);
+    }
 }
