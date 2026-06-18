@@ -116,4 +116,21 @@ public class OrderServiceImpl implements OrderService{
                 .items(itemResponses)
                 .build();
     }
+
+    @Override
+    public List<OrderResponse> getMyOrders(String userEmail) {
+        return orderRepository
+                .findByUserEmailOrderByCreatedAtDesc(userEmail)
+                .stream()
+                .map(order ->
+                        OrderResponse.builder()
+                                .orderId(order.getId())
+                                .orderNumber(order.getOrderNumber())
+                                .status(order.getStatus())
+                                .totalAmount(order.getTotalAmount())
+                                .items(List.of())
+                                .build()
+                )
+                .toList();
+    }
 }
