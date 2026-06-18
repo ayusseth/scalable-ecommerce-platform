@@ -93,4 +93,18 @@ public class GlobalExceptionHandler
                         .build());
     }
 
+    @ExceptionHandler(InsufficientStockException.class)
+    public ResponseEntity<ErrorResponse> handleInsufficientStock(
+            InsufficientStockException ex
+    ){
+        return ResponseEntity.badRequest()
+                .body(
+                        ErrorResponse.builder()
+                                .status(400)
+                                .message(ex.getMessage())
+                                .timestamp(LocalDateTime.now())
+                                .build()
+                );
+    }
+
 }

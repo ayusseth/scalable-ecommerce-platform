@@ -1,5 +1,6 @@
 package com.ayush.ecommerce.module.order.service;
 
+import com.ayush.ecommerce.exception.InsufficientStockException;
 import com.ayush.ecommerce.exception.OrderNotFoundException;
 import com.ayush.ecommerce.exception.ProductNotFoundException;
 import com.ayush.ecommerce.exception.UserNotFoundException;
@@ -37,6 +38,7 @@ public class OrderServiceImpl implements OrderService{
     private final OrderRepository orderRepository;
     private final OrderItemRepository orderItemRepository;
     @Override
+    @Transactional
     public OrderResponse createOrder(
             String userEmail,
             CreateOrderRequest request) {
@@ -66,6 +68,15 @@ public class OrderServiceImpl implements OrderService{
 
         for(var itemRequest: request.getItems()){
             Product product = productMap.get(itemRequest.getProductId());
+            if(product.getStockQuantity() < itemRequest.getQuantity()){
+                throw new InsufficientStockException(
+                        "Insufficient stock for " + product.getName()
+                );
+            }
+            product.setStockQuantity(
+                    product.getStockQuantity()
+                            - itemRequest.getQuantity()
+            );
             BigDecimal subtotal = product.getPrice()
                     .multiply(BigDecimal.valueOf(itemRequest.getQuantity()));
 
