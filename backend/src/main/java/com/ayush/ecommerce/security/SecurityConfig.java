@@ -53,6 +53,8 @@ public class SecurityConfig
                         ).permitAll()
                         .requestMatchers("/api/v1/orders/**")
                         .hasAnyRole("USER","ADMIN")
+                        .requestMatchers("/api/v1/payments/**")
+                        .hasAnyRole("USER","ADMIN")
                         .anyRequest()
                         .authenticated()
                 )
