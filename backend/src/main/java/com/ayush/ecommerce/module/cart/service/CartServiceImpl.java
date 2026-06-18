@@ -147,4 +147,74 @@ public class CartServiceImpl implements CartService {
                 .totalAmount(totalAmount)
                 .build();
     }
+
+    @Override
+    @Transactional
+    public CartResponse updateCartItem(
+            String userEmail,
+            Long productId,
+            Integer quantity
+    ) {
+
+        Cart cart = cartRepository
+                .findByUserEmail(userEmail)
+                .orElseThrow(() ->
+                        new CartNotFoundException(
+                                "Cart not found"
+                        ));
+
+        CartItem item = cartItemRepository
+                .findByCartIdAndProductId(
+                        cart.getId(),
+                        productId
+                )
+                .orElseThrow(() ->
+                        new ProductNotFoundException(
+                                "Product not found in cart"
+                        ));
+
+        item.setQuantity(quantity);
+
+        cartItemRepository.save(item);
+
+        return getCart(userEmail);
+    }
+
+    @Override
+    @Transactional
+    public void removeCartItem(
+            String userEmail,
+            Long productId
+    ) {
+
+        Cart cart = cartRepository
+                .findByUserEmail(userEmail)
+                .orElseThrow(() ->
+                        new CartNotFoundException(
+                                "Cart not found"
+                        ));
+
+        cartItemRepository.deleteByCartIdAndProductId(
+                cart.getId(),
+                productId
+        );
+    }
+
+    @Override
+    @Transactional
+    public void clearCart(
+            String userEmail
+    ) {
+
+        Cart cart = cartRepository
+                .findByUserEmail(userEmail)
+                .orElseThrow(() ->
+                        new CartNotFoundException(
+                                "Cart not found"
+                        ));
+
+        cartItemRepository.deleteByCartId(
+                cart.getId()
+        );
+    }
 }

@@ -21,4 +21,9 @@ public interface CartItemRepository
     void deleteByCartId(
             Long cartId
     );
+
+    void deleteByCartIdAndProductId(
+            Long cartId,
+            Long productId
+    );
 }

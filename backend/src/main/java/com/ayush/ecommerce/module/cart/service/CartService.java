@@ -13,4 +13,19 @@ public interface CartService {
     CartResponse getCart(
             String userEmail
     );
+
+    CartResponse updateCartItem(
+            String userEmail,
+            Long productId,
+            Integer quantity
+    );
+
+    void removeCartItem(
+            String userEmail,
+            Long productId
+    );
+
+    void clearCart(
+            String userEmail
+    );
 }

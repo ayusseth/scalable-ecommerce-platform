@@ -34,4 +34,37 @@ public class CartController {
                 authentication.getName()
         );
     }
+
+    @PutMapping("/items/{productId}")
+    public CartResponse updateCartItem(
+            Authentication authentication,
+            @PathVariable Long productId,
+            @RequestParam Integer quantity
+    ){
+        return cartService.updateCartItem(
+                authentication.getName(),
+                productId,
+                quantity
+        );
+    }
+
+    @DeleteMapping("/items/{productId}")
+    public void removeCartItem(
+            Authentication authentication,
+            @PathVariable Long productId
+    ){
+        cartService.removeCartItem(
+                authentication.getName(),
+                productId
+        );
+    }
+
+    @DeleteMapping("/clear")
+    public void clearCart(
+            Authentication authentication
+    ){
+        cartService.clearCart(
+                authentication.getName()
+        );
+    }
 }
