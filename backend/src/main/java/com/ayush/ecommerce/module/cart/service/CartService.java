@@ -2,6 +2,7 @@ package com.ayush.ecommerce.module.cart.service;
 
 import com.ayush.ecommerce.module.cart.dto.AddToCartRequest;
 import com.ayush.ecommerce.module.cart.dto.CartResponse;
+import com.ayush.ecommerce.module.cart.dto.CheckoutResponse;
 
 public interface CartService {
 
@@ -26,6 +27,10 @@ public interface CartService {
     );
 
     void clearCart(
+            String userEmail
+    );
+
+    CheckoutResponse checkout(
             String userEmail
     );
 }

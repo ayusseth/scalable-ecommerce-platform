@@ -1,17 +1,24 @@
 package com.ayush.ecommerce.module.cart.service;
 
 import com.ayush.ecommerce.exception.CartNotFoundException;
+import com.ayush.ecommerce.exception.InsufficientStockException;
 import com.ayush.ecommerce.exception.ProductNotFoundException;
 import com.ayush.ecommerce.exception.UserNotFoundException;
 import com.ayush.ecommerce.module.auth.entity.User;
 import com.ayush.ecommerce.module.cart.dto.AddToCartRequest;
 import com.ayush.ecommerce.module.cart.dto.CartItemResponse;
 import com.ayush.ecommerce.module.cart.dto.CartResponse;
+import com.ayush.ecommerce.module.cart.dto.CheckoutResponse;
 import com.ayush.ecommerce.module.cart.entity.Cart;
 import com.ayush.ecommerce.module.cart.entity.CartItem;
 import com.ayush.ecommerce.module.cart.repository.CartItemRepository;
 import com.ayush.ecommerce.module.cart.repository.CartRepository;
 import com.ayush.ecommerce.module.auth.repository.UserRepository;
+import com.ayush.ecommerce.module.order.entity.Order;
+import com.ayush.ecommerce.module.order.entity.OrderItem;
+import com.ayush.ecommerce.module.order.entity.OrderStatus;
+import com.ayush.ecommerce.module.order.repository.OrderItemRepository;
+import com.ayush.ecommerce.module.order.repository.OrderRepository;
 import com.ayush.ecommerce.module.product.entity.Product;
 import com.ayush.ecommerce.module.product.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +26,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -29,6 +38,8 @@ public class CartServiceImpl implements CartService {
     private final CartItemRepository cartItemRepository;
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
+    private final OrderRepository orderRepository;
+    private final OrderItemRepository orderItemRepository;
 
     @Transactional
     @Override
@@ -216,5 +227,118 @@ public class CartServiceImpl implements CartService {
         cartItemRepository.deleteByCartId(
                 cart.getId()
         );
+    }
+
+    @Override
+    @Transactional
+    public CheckoutResponse checkout(
+            String userEmail
+    ) {
+
+        User user = userRepository
+                .findByEmail(userEmail)
+                .orElseThrow(() ->
+                        new UserNotFoundException(
+                                "User not found"
+                        ));
+
+        Cart cart = cartRepository
+                .findByUserEmail(userEmail)
+                .orElseThrow(() ->
+                        new CartNotFoundException(
+                                "Cart not found"
+                        ));
+
+        List<CartItem> cartItems =
+                cartItemRepository.findByCartId(
+                        cart.getId()
+                );
+
+        if (cartItems.isEmpty()) {
+            throw new CartNotFoundException(
+                    "Cart is empty"
+            );
+        }
+
+        BigDecimal totalAmount = BigDecimal.ZERO;
+
+        for (CartItem item : cartItems) {
+
+            Product product = item.getProduct();
+
+            if (product.getStockQuantity()
+                    < item.getQuantity()) {
+
+                throw new InsufficientStockException(
+                        "Insufficient stock for "
+                                + product.getName()
+                );
+            }
+
+            totalAmount = totalAmount.add(
+                    product.getPrice().multiply(
+                            BigDecimal.valueOf(
+                                    item.getQuantity()
+                            )
+                    )
+            );
+        }
+
+        String orderNumber =
+                "ORD-" +
+                        UUID.randomUUID()
+                                .toString()
+                                .substring(0, 8)
+                                .toUpperCase();
+
+        Order order = Order.builder()
+                .orderNumber(orderNumber)
+                .user(user)
+                .status(OrderStatus.PENDING)
+                .totalAmount(totalAmount)
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .build();
+
+        Order savedOrder =
+                orderRepository.save(order);
+
+        for (CartItem item : cartItems) {
+
+            Product product = item.getProduct();
+
+            product.setStockQuantity(
+                    product.getStockQuantity()
+                            - item.getQuantity()
+            );
+
+            productRepository.save(product);
+
+            OrderItem orderItem =
+                    OrderItem.builder()
+                            .order(savedOrder)
+                            .product(product)
+                            .quantity(item.getQuantity())
+                            .unitPrice(product.getPrice())
+                            .subtotal(
+                                    product.getPrice()
+                                            .multiply(
+                                                    BigDecimal.valueOf(
+                                                            item.getQuantity()
+                                                    )
+                                            )
+                            )
+                            .build();
+
+            orderItemRepository.save(orderItem);
+        }
+
+        cartItemRepository.deleteByCartId(
+                cart.getId()
+        );
+
+        return CheckoutResponse.builder()
+                .orderNumber(orderNumber)
+                .build();
     }
 }

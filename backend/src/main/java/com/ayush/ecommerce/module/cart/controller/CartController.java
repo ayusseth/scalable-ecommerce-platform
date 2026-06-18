@@ -2,6 +2,7 @@ package com.ayush.ecommerce.module.cart.controller;
 
 import com.ayush.ecommerce.module.cart.dto.AddToCartRequest;
 import com.ayush.ecommerce.module.cart.dto.CartResponse;
+import com.ayush.ecommerce.module.cart.dto.CheckoutResponse;
 import com.ayush.ecommerce.module.cart.service.CartService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -64,6 +65,15 @@ public class CartController {
             Authentication authentication
     ){
         cartService.clearCart(
+                authentication.getName()
+        );
+    }
+
+    @PostMapping("/checkout")
+    public CheckoutResponse checkout(
+            Authentication authentication
+    ){
+        return cartService.checkout(
                 authentication.getName()
         );
     }
