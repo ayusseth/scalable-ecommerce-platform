@@ -165,4 +165,18 @@ public class GlobalExceptionHandler
                 );
     }
 
+    @ExceptionHandler(CartNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleCartNotFound(
+            CartNotFoundException ex
+    ){
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(
+                        ErrorResponse.builder()
+                                .status(404)
+                                .message(ex.getMessage())
+                                .timestamp(LocalDateTime.now())
+                                .build()
+                );
+    }
+
 }
