@@ -1,9 +1,6 @@
 package com.ayush.ecommerce.module.order.service;
 
-import com.ayush.ecommerce.exception.InsufficientStockException;
-import com.ayush.ecommerce.exception.OrderNotFoundException;
-import com.ayush.ecommerce.exception.ProductNotFoundException;
-import com.ayush.ecommerce.exception.UserNotFoundException;
+import com.ayush.ecommerce.exception.*;
 import com.ayush.ecommerce.module.auth.entity.User;
 import com.ayush.ecommerce.module.auth.repository.UserRepository;
 import com.ayush.ecommerce.module.order.dto.CreateOrderRequest;
@@ -153,7 +150,7 @@ public class OrderServiceImpl implements OrderService{
     @Override
     @Transactional(readOnly = true)
     public OrderResponse getOrderDetails(String userEmail, String orderNumber) {
-        
+
         Order order = orderRepository
                 .findByOrderNumber(orderNumber)
                 .orElseThrow(()-> new OrderNotFoundException("Order not found"));
@@ -191,6 +188,14 @@ public class OrderServiceImpl implements OrderService{
         Order order = orderRepository
                 .findByOrderNumber(orderNumber)
                 .orElseThrow(()-> new OrderNotFoundException("Order not fond"));
+
+        if(!isValidTransition(order.getStatus(), request.getStatus())){
+            throw new InvalidOrderStatusTransitionException(
+                    "Invalid status transition from "
+                    +order.getStatus()
+                    +" to "
+                    +request.getStatus());
+        }
         order.setStatus(request.getStatus());
         order.setUpdatedAt(LocalDateTime.now());
 
@@ -198,10 +203,26 @@ public class OrderServiceImpl implements OrderService{
 
         return OrderResponse.builder()
                 .orderId(savedOrder.getId())
+                .orderNumber(savedOrder.getOrderNumber())
                 .status(savedOrder.getStatus())
                 .totalAmount(savedOrder.getTotalAmount())
                 .items(List.of())
                 .build();
 
+    }
+    private boolean isValidTransition(OrderStatus currentStatus, OrderStatus newStatus){
+        return switch (currentStatus){
+            case PENDING -> newStatus == OrderStatus.PAID
+                    || newStatus == OrderStatus.CANCELLED;
+
+            case PAID -> newStatus == OrderStatus.PROCESSING
+                    || newStatus == OrderStatus.CANCELLED;
+
+            case PROCESSING -> newStatus == OrderStatus.SHIPPED;
+
+            case SHIPPED -> newStatus == OrderStatus.DELIVERED;
+
+            case DELIVERED, CANCELLED -> false;
+        };
     }
 }

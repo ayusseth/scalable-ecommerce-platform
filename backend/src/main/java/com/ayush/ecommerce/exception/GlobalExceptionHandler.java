@@ -107,4 +107,21 @@ public class GlobalExceptionHandler
                 );
     }
 
+    @ExceptionHandler(
+            InvalidOrderStatusTransitionException.class
+    )
+    public ResponseEntity<ErrorResponse>
+    handleInvalidOrderStatusTransition(
+            InvalidOrderStatusTransitionException ex
+    ){
+        return ResponseEntity.badRequest()
+                .body(
+                        ErrorResponse.builder()
+                                .status(400)
+                                .message(ex.getMessage())
+                                .timestamp(LocalDateTime.now())
+                                .build()
+                );
+    }
+
 }
