@@ -3,10 +3,7 @@ package com.ayush.ecommerce.module.order.service;
 import com.ayush.ecommerce.exception.*;
 import com.ayush.ecommerce.module.auth.entity.User;
 import com.ayush.ecommerce.module.auth.repository.UserRepository;
-import com.ayush.ecommerce.module.order.dto.CreateOrderRequest;
-import com.ayush.ecommerce.module.order.dto.OrderItemResponse;
-import com.ayush.ecommerce.module.order.dto.OrderResponse;
-import com.ayush.ecommerce.module.order.dto.UpdateOrderStatusRequest;
+import com.ayush.ecommerce.module.order.dto.*;
 import com.ayush.ecommerce.module.order.entity.Order;
 import com.ayush.ecommerce.module.order.entity.OrderItem;
 import com.ayush.ecommerce.module.order.entity.OrderStatus;
@@ -210,6 +207,55 @@ public class OrderServiceImpl implements OrderService{
                 .build();
 
     }
+
+    @Override
+    @Transactional
+    public OrderResponse cancelOrder(String userEmail, String orderNumber, CancelOrderRequest request) {
+        Order order = orderRepository
+                .findByOrderNumber(orderNumber)
+                .orElseThrow(()-> new OrderNotFoundException("Order not found"));
+
+        if(!order.getUser().getEmail().equals(userEmail)){
+            throw new OrderNotFoundException("Order not found");
+        }
+        if(order.getStatus() != OrderStatus.PENDING && order.getStatus() != OrderStatus.PAID){
+            throw new OrderCancellationException("Order cannot be cancelled in status "+ order.getStatus());
+        }
+
+        List<OrderItem> orderItems = orderItemRepository.findByOrderOrderNumber(orderNumber);
+        for(OrderItem item :orderItems){
+            Product product = item.getProduct();
+            product.setStockQuantity(product.getStockQuantity()+ item.getQuantity());
+        }
+
+        order.setStatus(OrderStatus.CANCELLED);
+        order.setUpdatedAt(LocalDateTime.now());
+
+        productRepository.saveAll(orderItems.stream()
+                .map(OrderItem::getProduct)
+                .toList());
+
+        Order savedOrder = orderRepository.save(order);
+        List<OrderItemResponse> itemResponses = orderItems.stream()
+                .map(item-> OrderItemResponse.builder()
+                        .productId(item.getProduct().getId())
+                        .productName(item.getProduct().getName())
+                        .quantity(item.getQuantity())
+                        .unitPrice(item.getUnitPrice())
+                        .subtotal(item.getSubtotal())
+                        .build()
+                ).toList();
+
+        return OrderResponse.builder()
+                .orderId(savedOrder.getId())
+                .orderNumber(savedOrder.getOrderNumber())
+                .status(savedOrder.getStatus())
+                .totalAmount(savedOrder.getTotalAmount())
+                .items(itemResponses)
+                .build();
+
+    }
+
     private boolean isValidTransition(OrderStatus currentStatus, OrderStatus newStatus){
         return switch (currentStatus){
             case PENDING -> newStatus == OrderStatus.PAID

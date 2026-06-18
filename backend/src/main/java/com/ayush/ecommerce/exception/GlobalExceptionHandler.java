@@ -124,4 +124,18 @@ public class GlobalExceptionHandler
                 );
     }
 
+    @ExceptionHandler(OrderCancellationException.class)
+    public ResponseEntity<ErrorResponse> handleOrderCancellation(
+            OrderCancellationException ex
+    ){
+        return ResponseEntity.badRequest()
+                .body(
+                        ErrorResponse.builder()
+                                .status(400)
+                                .message(ex.getMessage())
+                                .timestamp(LocalDateTime.now())
+                                .build()
+                );
+    }
+
 }

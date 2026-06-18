@@ -1,5 +1,6 @@
 package com.ayush.ecommerce.module.order.controller;
 
+import com.ayush.ecommerce.module.order.dto.CancelOrderRequest;
 import com.ayush.ecommerce.module.order.dto.CreateOrderRequest;
 import com.ayush.ecommerce.module.order.dto.OrderResponse;
 import com.ayush.ecommerce.module.order.service.OrderService;
@@ -41,5 +42,15 @@ public class OrderController {
     @GetMapping("/{orderNumber}")
     public OrderResponse getOrderDetails(Authentication authentication, @PathVariable String orderNumber){
         return orderService.getOrderDetails(authentication.getName(), orderNumber);
+    }
+
+    @PutMapping("/{orderNumber}/cancel")
+    public OrderResponse cancelOrder(Authentication authentication,
+                                     @PathVariable String orderNumber,
+                                     @RequestBody(required = false)
+                                     CancelOrderRequest request){
+        return
+                orderService.cancelOrder(authentication.getName(),
+                        orderNumber, request);
     }
 }

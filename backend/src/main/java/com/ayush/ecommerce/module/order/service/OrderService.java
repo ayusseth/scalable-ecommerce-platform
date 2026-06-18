@@ -1,5 +1,6 @@
 package com.ayush.ecommerce.module.order.service;
 
+import com.ayush.ecommerce.module.order.dto.CancelOrderRequest;
 import com.ayush.ecommerce.module.order.dto.CreateOrderRequest;
 import com.ayush.ecommerce.module.order.dto.OrderResponse;
 import com.ayush.ecommerce.module.order.dto.UpdateOrderStatusRequest;
@@ -17,4 +18,10 @@ public interface OrderService {
     OrderResponse getOrderDetails(String userEmail, String orderNumber);
 
     OrderResponse updateOrderStatus(String orderNumber, UpdateOrderStatusRequest request);
+
+    OrderResponse cancelOrder(String userEmail, String orderNumber, CancelOrderRequest request);
+
+
+
+
 }
