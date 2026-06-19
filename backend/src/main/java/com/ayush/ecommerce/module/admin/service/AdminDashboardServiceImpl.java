@@ -5,6 +5,7 @@ import com.ayush.ecommerce.module.order.repository.OrderRepository;
 import com.ayush.ecommerce.module.product.repository.ProductRepository;
 import com.ayush.ecommerce.module.auth.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -19,6 +20,7 @@ public class AdminDashboardServiceImpl
     private final OrderRepository orderRepository;
 
     @Override
+    @Cacheable("dashboard")
     public DashboardStatsResponse getDashboardStats() {
 
         BigDecimal revenue =

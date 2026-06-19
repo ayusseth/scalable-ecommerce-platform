@@ -22,5 +22,28 @@ services:
     ports:
       - "6379:6379"
 
+  ecommerce-app:
+    build:
+      context: .
+
+    container_name: ecommerce-app
+
+    depends_on:
+      - postgres
+      - redis
+
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: ecommerce
+      DB_USERNAME: postgres
+      DB_PASSWORD: postgres
+
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+
+    ports:
+      - "8080:8080"
+
 volumes:
   postgres_data:

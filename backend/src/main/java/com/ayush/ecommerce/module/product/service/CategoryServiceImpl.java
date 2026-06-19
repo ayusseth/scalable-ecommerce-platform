@@ -6,6 +6,8 @@ import com.ayush.ecommerce.module.product.dto.CreateCategoryRequest;
 import com.ayush.ecommerce.module.product.entity.Category;
 import com.ayush.ecommerce.module.product.repository.CategoryRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,6 +17,10 @@ import java.util.List;
 public class CategoryServiceImpl implements CategoryService {
     private final CategoryRepository categoryRepository;
     @Override
+    @CacheEvict(
+            value = "categories",
+            allEntries = true
+    )
     public CategoryResponse createCategory(CreateCategoryRequest request) {
         if(categoryRepository.existsByName(request.getName())){
             throw new CategoryAlreadyExistsException(
@@ -35,6 +41,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    @Cacheable("categories")
     public List<CategoryResponse> getAllCategories() {
         return categoryRepository.findAll()
                 .stream()
@@ -62,6 +69,10 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    @CacheEvict(
+            value = "categories",
+            allEntries = true
+    )
     public CategoryResponse updateCategory(Long categoryId, CreateCategoryRequest request) {
         Category category = categoryRepository
                 .findById(categoryId)
@@ -79,6 +90,10 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    @CacheEvict(
+            value = "categories",
+            allEntries = true
+    )
     public void deleteCategory(Long categoryId) {
         Category category = categoryRepository
                 .findById(categoryId)

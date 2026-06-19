@@ -12,6 +12,8 @@ import com.ayush.ecommerce.module.product.entity.Product;
 import com.ayush.ecommerce.module.product.repository.CategoryRepository;
 import com.ayush.ecommerce.module.product.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -30,6 +32,10 @@ public class ProductServiceImpl implements ProductService {
     private final CategoryRepository categoryRepository;
 
     @Override
+    @CacheEvict(
+            value = {"products","product"},
+            allEntries = true
+    )
     public ProductResponse createProduct(CreateProductRequest request) {
         Category category = categoryRepository
                 .findById(request.getCategoryId())
@@ -70,6 +76,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Cacheable(value = "product", key = "#id")
     public ProductDetailResponse getProductById(Long productId) {
         Product product = productRepository
                 .findByIdAndActiveTrue(productId)
@@ -89,6 +96,10 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @CacheEvict(
+            value = {"products","product"},
+            allEntries = true
+    )
     public ProductResponse updateProduct(Long productId, UpdateProductRequest request) {
         Product product = productRepository
                 .findById(productId)
@@ -111,6 +122,10 @@ public class ProductServiceImpl implements ProductService {
 
     //soft delete method is below
     @Override
+    @CacheEvict(
+            value = {"products","product"},
+            allEntries = true
+    )
     public void deleteProduct(Long productId) {
         Product product = productRepository
                 .findById(productId)
@@ -136,6 +151,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Cacheable("products")
     public Page<ProductResponse> getProducts(int page, int size, String sortBy, String direction) {
         Sort sort = direction.equalsIgnoreCase("desc")
                 ? Sort.by(sortBy).descending()

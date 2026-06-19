@@ -11,6 +11,7 @@ import com.ayush.ecommerce.module.order.repository.OrderItemRepository;
 import com.ayush.ecommerce.module.order.repository.OrderRepository;
 import com.ayush.ecommerce.module.product.entity.Product;
 import com.ayush.ecommerce.module.product.repository.ProductRepository;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -34,6 +35,10 @@ public class OrderServiceImpl implements OrderService{
     private final OrderItemRepository orderItemRepository;
     @Override
     @Transactional
+    @CacheEvict(
+            value = "dashboard",
+            allEntries = true
+    )
     public OrderResponse createOrder(
             String userEmail,
             CreateOrderRequest request) {
@@ -180,6 +185,10 @@ public class OrderServiceImpl implements OrderService{
 
     @Override
     @Transactional
+    @CacheEvict(
+            value = "dashboard",
+            allEntries = true
+    )
     public OrderResponse updateOrderStatus(String orderNumber, UpdateOrderStatusRequest request) {
 
         Order order = orderRepository
@@ -210,6 +219,10 @@ public class OrderServiceImpl implements OrderService{
 
     @Override
     @Transactional
+    @CacheEvict(
+            value = "dashboard",
+            allEntries = true
+    )
     public OrderResponse cancelOrder(String userEmail, String orderNumber, CancelOrderRequest request) {
         Order order = orderRepository
                 .findByOrderNumber(orderNumber)
