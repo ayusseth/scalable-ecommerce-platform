@@ -36,4 +36,8 @@ public interface ProductService {
             BigDecimal minPrice,
             BigDecimal maxPrice
     );
+
+    List<ProductResponse> getLowStockProducts(
+            Integer threshold
+    );
 }

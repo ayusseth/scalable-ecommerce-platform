@@ -199,4 +199,13 @@ public class ProductServiceImpl implements ProductService {
                 .map(this::mapToResponse)
                 .toList();
     }
+
+    @Override
+    public List<ProductResponse> getLowStockProducts(Integer threshold) {
+        return productRepository
+                .findByStockQuantityLessThanAndActiveTrue(threshold)
+                .stream()
+                .map(this::mapToResponse)
+                .toList();
+    }
 }

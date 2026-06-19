@@ -31,4 +31,9 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
             BigDecimal maxPrice
     );
 
+    List<Product> findByStockQuantityLessThanAndActiveTrue(
+            Integer threshold
+    );
+    long countByActiveTrue();
+
 }
