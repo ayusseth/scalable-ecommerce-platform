@@ -36,7 +36,9 @@ public class SecurityConfig
                                 "/actuator/health",
                                 "/api/v1/auth/register",
                                 "/api/v1/auth/login",
-                                "/api/v1/test/email"
+                                "/api/v1/test/email",
+                                "/api/v1/auth/send-otp",
+                                "/api/v1/auth/verify-otp"
                         ).permitAll()
                         .requestMatchers(
                                 "/api/v1/admin/**"

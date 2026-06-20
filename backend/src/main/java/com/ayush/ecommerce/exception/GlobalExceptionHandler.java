@@ -179,4 +179,18 @@ public class GlobalExceptionHandler
                 );
     }
 
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<ErrorResponse> handleIllegalStateException(
+            IllegalStateException ex
+    ) {
+        return ResponseEntity.badRequest()
+                .body(
+                        ErrorResponse.builder()
+                                .status(400)
+                                .message(ex.getMessage())
+                                .timestamp(LocalDateTime.now())
+                                .build()
+                );
+    }
+
 }

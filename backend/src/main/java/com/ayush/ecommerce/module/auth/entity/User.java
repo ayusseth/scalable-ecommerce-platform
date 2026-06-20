@@ -34,6 +34,10 @@ public class User
     // This helps preserve historical data such as orders and payments while preventing the user from authenticating.
     // It also supports use cases like account suspension, email verification, and employee off-boarding.
 
+    @Builder.Default
+    @Column(nullable = false)
+    private boolean emailVerified = false;
+
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "user_roles",
