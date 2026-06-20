@@ -12,6 +12,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/auth")
@@ -95,9 +97,34 @@ public class AuthController
                 );
 
         user.setEmailVerified(true);
+        user.setUpdatedAt(LocalDateTime.now());
 
         userRepository.save(user);
 
         return "Email verified successfully";
+    }
+
+    @PostMapping("/forgot-password")
+    public String forgotPassword(
+            @Valid
+            @RequestBody
+            ForgotPasswordRequest request
+    ) {
+
+        authService.forgotPassword(request);
+
+        return "Password reset OTP sent successfully";
+    }
+
+    @PostMapping("/reset-password")
+    public String resetPassword(
+            @Valid
+            @RequestBody
+            ResetPasswordRequest request
+    ) {
+
+        authService.resetPassword(request);
+
+        return "Password reset successfully";
     }
 }

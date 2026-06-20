@@ -17,6 +17,7 @@ public class SecurityConfig
 {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 
     @Bean
     public SecurityFilterChain securityFilterChain(
@@ -29,6 +30,11 @@ public class SecurityConfig
                         session.sessionCreationPolicy(
                                 SessionCreationPolicy.STATELESS
                         ))
+                .exceptionHandling(exception ->
+                        exception.authenticationEntryPoint(
+                                customAuthenticationEntryPoint
+                        )
+                )
                 .authorizeHttpRequests(auth->auth
                         .requestMatchers(
                                 "/swagger-ui/**",
@@ -38,7 +44,9 @@ public class SecurityConfig
                                 "/api/v1/auth/login",
                                 "/api/v1/test/email",
                                 "/api/v1/auth/send-otp",
-                                "/api/v1/auth/verify-otp"
+                                "/api/v1/auth/verify-otp",
+                                "/api/v1/auth/forgot-password",
+                                "/api/v1/auth/reset-password"
                         ).permitAll()
                         .requestMatchers(
                                 "/api/v1/admin/**"

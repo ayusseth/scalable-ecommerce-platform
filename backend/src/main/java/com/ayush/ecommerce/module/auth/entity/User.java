@@ -3,6 +3,7 @@ package com.ayush.ecommerce.module.auth.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 @Entity
@@ -46,4 +47,10 @@ public class User
     )
     @Builder.Default
     private Set<Role> roles = new HashSet<>();
+
+    @Column(nullable = false)
+    private LocalDateTime createdAt;
+
+    @Column(nullable = false)
+    private LocalDateTime updatedAt;
 }

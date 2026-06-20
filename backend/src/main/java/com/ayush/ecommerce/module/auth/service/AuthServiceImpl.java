@@ -4,10 +4,7 @@ import com.ayush.ecommerce.common.enums.RoleName;
 import com.ayush.ecommerce.exception.RoleNotFoundException;
 import com.ayush.ecommerce.exception.UserAlreadyExistsException;
 import com.ayush.ecommerce.exception.UserNotFoundException;
-import com.ayush.ecommerce.module.auth.dto.LoginRequest;
-import com.ayush.ecommerce.module.auth.dto.LoginResponse;
-import com.ayush.ecommerce.module.auth.dto.RegisterRequest;
-import com.ayush.ecommerce.module.auth.dto.RegisterResponse;
+import com.ayush.ecommerce.module.auth.dto.*;
 import com.ayush.ecommerce.module.auth.entity.Role;
 import com.ayush.ecommerce.module.auth.entity.User;
 import com.ayush.ecommerce.module.auth.otp.OtpService;
@@ -21,6 +18,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Set;
 
 @Service
@@ -64,6 +62,8 @@ public class AuthServiceImpl implements AuthService{
                 .roles(Set.of(userRole))
                 .enabled(true)
                 .emailVerified(false)
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
                 .build();
         User savedUser = userRepository.save(user);
         String otp =
@@ -124,5 +124,75 @@ public class AuthServiceImpl implements AuthService{
                 .accessToken(token)
                 .tokenType("Bearer")
                 .build();
+    }
+
+    @Override
+    public void forgotPassword(
+            ForgotPasswordRequest request
+    ) {
+
+        User user = userRepository
+                .findByEmail(request.getEmail())
+                .orElseThrow(() ->
+                        new UserNotFoundException(
+                                "User not found"
+                        )
+                );
+
+        String otp =
+                otpService.generateOtp(
+                        user.getEmail()
+                );
+
+        emailService.sendEmail(
+                user.getEmail(),
+                "Password Reset OTP",
+                """
+                Your password reset OTP is:
+    
+                %s
+    
+                This OTP will expire in 5 minutes.
+                """
+                        .formatted(otp)
+        );
+    }
+
+    @Override
+    public void resetPassword(
+            ResetPasswordRequest request
+    ) {
+
+        boolean valid =
+                otpService.verifyOtp(
+                        request.getEmail(),
+                        request.getOtp()
+                );
+
+        if(!valid){
+            throw new IllegalArgumentException(
+                    "Invalid or expired OTP"
+            );
+        }
+
+        User user = userRepository
+                .findByEmail(request.getEmail())
+                .orElseThrow(() ->
+                        new UserNotFoundException(
+                                "User not found"
+                        )
+                );
+
+        user.setPassword(
+                passwordEncoder.encode(
+                        request.getNewPassword()
+                )
+        );
+
+        user.setUpdatedAt(
+                java.time.LocalDateTime.now()
+        );
+
+        userRepository.save(user);
     }
 }
