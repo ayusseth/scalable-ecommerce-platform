@@ -1,6 +1,7 @@
 package com.ayush.ecommerce.module.order.repository;
 
 import com.ayush.ecommerce.module.order.entity.Order;
+import com.ayush.ecommerce.module.order.entity.OrderStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -20,4 +21,6 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
        WHERE o.status <> 'CANCELLED'
        """)
     BigDecimal getTotalRevenue();
+
+    long countByStatus(OrderStatus status);
 }

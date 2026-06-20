@@ -36,4 +36,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     );
     long countByActiveTrue();
 
+    long countByStockQuantityLessThanAndActiveTrue(Integer threshold);
+
 }
