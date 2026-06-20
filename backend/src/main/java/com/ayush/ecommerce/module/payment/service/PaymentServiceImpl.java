@@ -3,6 +3,7 @@ package com.ayush.ecommerce.module.payment.service;
 import com.ayush.ecommerce.exception.OrderNotFoundException;
 import com.ayush.ecommerce.exception.PaymentAlreadyExistsException;
 import com.ayush.ecommerce.exception.PaymentNotFoundException;
+import com.ayush.ecommerce.module.notification.service.EmailService;
 import com.ayush.ecommerce.module.order.entity.Order;
 import com.ayush.ecommerce.module.order.entity.OrderItem;
 import com.ayush.ecommerce.module.order.entity.OrderStatus;
@@ -41,6 +42,7 @@ public class PaymentServiceImpl implements PaymentService {
     private final RazorpayClient razorpayClient;
     private final RazorpayProperties razorpayProperties;
     private final ProductRepository productRepository;
+    private final EmailService emailService;
 
     @Override
     @Transactional
@@ -322,7 +324,9 @@ public class PaymentServiceImpl implements PaymentService {
                                     )
                             );
             if (payment.getStatus() == PaymentStatus.SUCCESS) {
-                return;
+                throw new IllegalStateException(
+                        "Payment already verified"
+                );
             }
 
             payment.setRazorpayPaymentId(
@@ -345,7 +349,11 @@ public class PaymentServiceImpl implements PaymentService {
 
             Order order =
                     payment.getOrder();
-
+            if (order.getStatus() != OrderStatus.PENDING) {
+                throw new IllegalStateException(
+                        "Order is not eligible for payment"
+                );
+            }
             order.setStatus(
                     OrderStatus.PAID
             );
@@ -353,6 +361,14 @@ public class PaymentServiceImpl implements PaymentService {
             order.setUpdatedAt(
                     LocalDateTime.now()
             );
+
+            if(order.getItems() == null
+                    || order.getItems().isEmpty()){
+
+                throw new IllegalStateException(
+                        "Order items not found"
+                );
+            }
 
             for (OrderItem item : order.getItems()) {
 
@@ -380,6 +396,30 @@ public class PaymentServiceImpl implements PaymentService {
             }
 
             orderRepository.save(order);
+
+            emailService.sendEmail(
+                    order.getUser().getEmail(),
+                    "Payment Successful",
+                    """
+                    Hello %s,
+            
+                    Your payment has been successfully received.
+            
+                    Order Number: %s
+                    Payment Reference: %s
+                    Amount: ₹%s
+            
+                    Thank you for shopping with us.
+            
+                    Team E-Commerce
+                    """
+                            .formatted(
+                                    order.getUser().getName(),
+                                    order.getOrderNumber(),
+                                    payment.getPaymentReference(),
+                                    payment.getAmount()
+                            )
+            );
 
         } catch (Exception e) {
 
