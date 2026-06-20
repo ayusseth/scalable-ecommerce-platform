@@ -3,6 +3,7 @@ package com.ayush.ecommerce.module.order.service;
 import com.ayush.ecommerce.exception.*;
 import com.ayush.ecommerce.module.auth.entity.User;
 import com.ayush.ecommerce.module.auth.repository.UserRepository;
+import com.ayush.ecommerce.module.notification.service.EmailService;
 import com.ayush.ecommerce.module.order.dto.*;
 import com.ayush.ecommerce.module.order.entity.Order;
 import com.ayush.ecommerce.module.order.entity.OrderItem;
@@ -33,6 +34,8 @@ public class OrderServiceImpl implements OrderService{
     private final ProductRepository productRepository;
     private final OrderRepository orderRepository;
     private final OrderItemRepository orderItemRepository;
+    private final EmailService emailService;
+
     @Override
     @Transactional
     @CacheEvict(
@@ -120,6 +123,28 @@ public class OrderServiceImpl implements OrderService{
             orderItem.setOrder(savedOrder);
             orderItemRepository.save(orderItem);
         }
+        emailService.sendEmail(
+                user.getEmail(),
+                "Order Created Successfully",
+                """
+                Dear Customer,
+        
+                Your order has been placed successfully.
+        
+                Order Number: %s
+        
+                Total Amount: ₹%s
+        
+                Current Status: %s
+        
+                Thank you for shopping with us.
+                """
+                        .formatted(
+                                savedOrder.getOrderNumber(),
+                                savedOrder.getTotalAmount(),
+                                savedOrder.getStatus()
+                        )
+        );
 
 
         return OrderResponse.builder()
