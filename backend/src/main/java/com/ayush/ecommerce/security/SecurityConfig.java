@@ -35,7 +35,8 @@ public class SecurityConfig
                                 "/v3/api-docs/**",
                                 "/actuator/health",
                                 "/api/v1/auth/register",
-                                "/api/v1/auth/login"
+                                "/api/v1/auth/login",
+                                "/api/v1/test/email"
                         ).permitAll()
                         .requestMatchers(
                                 "/api/v1/admin/**"
