@@ -3,11 +3,12 @@ package com.ayush.ecommerce.module.product.dto;
 import lombok.Builder;
 import lombok.Data;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 
 @Data
 @Builder
-public class ProductDetailResponse {
+public class ProductDetailResponse implements Serializable {
     private Long id;
     private String name;
     private String description;

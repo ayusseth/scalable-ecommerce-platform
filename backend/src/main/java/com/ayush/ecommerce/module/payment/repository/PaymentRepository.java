@@ -24,4 +24,8 @@ public interface PaymentRepository
             String email
     );
 
+    Optional<Payment> findByRazorpayOrderId(
+            String razorpayOrderId
+    );
+
 }

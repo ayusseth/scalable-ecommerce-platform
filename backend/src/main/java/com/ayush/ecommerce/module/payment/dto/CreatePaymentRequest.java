@@ -1,11 +1,13 @@
 package com.ayush.ecommerce.module.payment.dto;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
 public class CreatePaymentRequest {
 
-    @NotBlank
-    private String orderNumber;
+
+    @NotNull
+    private Long orderId;
 }

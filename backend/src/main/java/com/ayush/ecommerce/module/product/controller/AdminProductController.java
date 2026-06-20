@@ -1,13 +1,14 @@
 package com.ayush.ecommerce.module.product.controller;
 
 
+import com.ayush.ecommerce.module.product.dto.CreateProductRequest;
 import com.ayush.ecommerce.module.product.dto.ProductResponse;
+import com.ayush.ecommerce.module.product.dto.UpdateProductRequest;
 import com.ayush.ecommerce.module.product.service.ProductService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -16,6 +17,27 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AdminProductController {
     private final ProductService productService;
+
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public ProductResponse createProduct(
+            @Valid @RequestBody CreateProductRequest request
+    ){
+        return productService.createProduct(request);
+    }
+
+    @PutMapping("/{id}")
+    public ProductResponse updateProduct(
+            @PathVariable Long id,
+            @Valid @RequestBody
+            UpdateProductRequest request){
+        return productService.updateProduct(id, request);
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteProduct(@PathVariable Long id){
+        productService.deleteProduct(id);
+    }
 
     @GetMapping("/low-stock")
     public List<ProductResponse> getLowStockProducts(

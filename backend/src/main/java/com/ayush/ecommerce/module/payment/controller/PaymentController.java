@@ -1,7 +1,9 @@
 package com.ayush.ecommerce.module.payment.controller;
 
 import com.ayush.ecommerce.module.payment.dto.CreatePaymentRequest;
+import com.ayush.ecommerce.module.payment.dto.CreatePaymentResponse;
 import com.ayush.ecommerce.module.payment.dto.PaymentResponse;
+import com.ayush.ecommerce.module.payment.dto.VerifyPaymentRequest;
 import com.ayush.ecommerce.module.payment.service.PaymentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -47,5 +49,22 @@ public class PaymentController {
         return paymentService.getMyPayments(
                 authentication.getName()
         );
+    }
+
+    @PostMapping("/razorpay/create-order")
+    public CreatePaymentResponse createRazorpayOrder(Authentication authentication,
+                                                     @Valid @RequestBody CreatePaymentRequest request){
+        return paymentService.createRazorpayOrder(authentication.getName(), request);
+    }
+
+    @PostMapping("/razorpay/verify")
+    public String verifyPayment(
+            @Valid
+            @RequestBody
+            VerifyPaymentRequest request
+    ){
+        paymentService.verifyPayment(request);
+
+        return "Payment verified successfully";
     }
 }

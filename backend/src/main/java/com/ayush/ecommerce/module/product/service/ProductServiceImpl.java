@@ -76,7 +76,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    @Cacheable(value = "product", key = "#id")
+    @Cacheable(value = "product", key = "#productId")
     public ProductDetailResponse getProductById(Long productId) {
         Product product = productRepository
                 .findByIdAndActiveTrue(productId)

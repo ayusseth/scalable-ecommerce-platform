@@ -4,14 +4,22 @@ import com.ayush.ecommerce.exception.OrderNotFoundException;
 import com.ayush.ecommerce.exception.PaymentAlreadyExistsException;
 import com.ayush.ecommerce.exception.PaymentNotFoundException;
 import com.ayush.ecommerce.module.order.entity.Order;
+import com.ayush.ecommerce.module.order.entity.OrderItem;
 import com.ayush.ecommerce.module.order.entity.OrderStatus;
+import com.ayush.ecommerce.module.payment.config.RazorpayProperties;
 import com.ayush.ecommerce.module.payment.dto.CreatePaymentRequest;
+import com.ayush.ecommerce.module.payment.dto.CreatePaymentResponse;
 import com.ayush.ecommerce.module.payment.dto.PaymentResponse;
+import com.ayush.ecommerce.module.payment.dto.VerifyPaymentRequest;
 import com.ayush.ecommerce.module.payment.entity.Payment;
 import com.ayush.ecommerce.module.payment.entity.PaymentStatus;
 import com.ayush.ecommerce.module.payment.repository.PaymentRepository;
 import com.ayush.ecommerce.module.order.repository.OrderRepository;
+import com.ayush.ecommerce.module.product.entity.Product;
+import com.ayush.ecommerce.module.product.repository.ProductRepository;
+import com.razorpay.RazorpayClient;
 import lombok.RequiredArgsConstructor;
+import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,12 +27,20 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
+
+
+import com.razorpay.Utils;
+import org.json.JSONObject;
+
 @Service
 @RequiredArgsConstructor
 public class PaymentServiceImpl implements PaymentService {
 
     private final PaymentRepository paymentRepository;
     private final OrderRepository orderRepository;
+    private final RazorpayClient razorpayClient;
+    private final RazorpayProperties razorpayProperties;
+    private final ProductRepository productRepository;
 
     @Override
     @Transactional
@@ -34,7 +50,7 @@ public class PaymentServiceImpl implements PaymentService {
     ) {
 
         Order order = orderRepository
-                .findByOrderNumber(request.getOrderNumber())
+                .findById(request.getOrderId())
                 .orElseThrow(() ->
                         new OrderNotFoundException(
                                 "Order not found"
@@ -71,7 +87,7 @@ public class PaymentServiceImpl implements PaymentService {
                 .paymentReference(paymentReference)
                 .order(order)
                 .amount(order.getTotalAmount())
-                .status(PaymentStatus.SUCCESS)
+                .status(PaymentStatus.PENDING)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .build();
@@ -79,8 +95,10 @@ public class PaymentServiceImpl implements PaymentService {
         Payment savedPayment =
                 paymentRepository.save(payment);
 
-        order.setStatus(OrderStatus.PAID);
+
         order.setUpdatedAt(LocalDateTime.now());
+
+
 
         orderRepository.save(order);
 
@@ -155,5 +173,220 @@ public class PaymentServiceImpl implements PaymentService {
                                 .build()
                 )
                 .toList();
+    }
+
+    @Override
+    @Transactional
+    public CreatePaymentResponse createRazorpayOrder(String userEmail, CreatePaymentRequest request) {
+        Order order = orderRepository
+                .findById(request.getOrderId())
+                .orElseThrow(() ->
+                        new OrderNotFoundException(
+                                "Order not found"
+                        ));
+
+        if (!order.getUser().getEmail().equals(userEmail)) {
+            throw new OrderNotFoundException(
+                    "Order not found"
+            );
+        }
+
+        paymentRepository
+                .findByOrderId(order.getId())
+                .ifPresent(payment -> {
+                    throw new PaymentAlreadyExistsException(
+                            "Payment already exists"
+                    );
+                });
+
+        try {
+
+            JSONObject options = new JSONObject();
+
+            options.put(
+                    "amount",
+                    order.getTotalAmount()
+                            .multiply(java.math.BigDecimal.valueOf(100))
+                            .longValue()
+            );
+
+            options.put(
+                    "currency",
+                    "INR"
+            );
+
+            options.put(
+                    "receipt",
+                    order.getOrderNumber()
+            );
+
+            com.razorpay.Order razorpayOrder =
+                    razorpayClient.orders.create(options);
+
+            String paymentReference =
+                    "PAY-" +
+                            UUID.randomUUID()
+                                    .toString()
+                                    .substring(0, 8)
+                                    .toUpperCase();
+
+            Payment payment = Payment.builder()
+                    .paymentReference(paymentReference)
+                    .order(order)
+                    .amount(order.getTotalAmount())
+                    .status(PaymentStatus.PENDING)
+                    .razorpayOrderId(
+                            razorpayOrder.get("id")
+                                    .toString()
+                    )
+                    .createdAt(LocalDateTime.now())
+                    .updatedAt(LocalDateTime.now())
+                    .build();
+
+            paymentRepository.save(payment);
+
+            return CreatePaymentResponse.builder()
+                    .razorpayOrderId(
+                            razorpayOrder.get("id")
+                                    .toString()
+                    )
+                    .paymentReference(
+                            paymentReference
+                    )
+                    .amount(
+                            order.getTotalAmount()
+                                    .multiply(
+                                            java.math.BigDecimal.valueOf(100)
+                                    )
+                                    .longValue()
+                    )
+                    .currency("INR")
+                    .keyId(
+                            razorpayProperties.getKeyId()
+                    )
+                    .build();
+
+        } catch (Exception e) {
+            throw new RuntimeException(
+                    "Failed to create Razorpay order",
+                    e
+            );
+        }
+    }
+
+    @Override
+    @Transactional
+    public void verifyPayment(
+            VerifyPaymentRequest request
+    ) {
+
+        try {
+
+            JSONObject attributes = new JSONObject();
+
+            attributes.put(
+                    "razorpay_order_id",
+                    request.getRazorpayOrderId()
+            );
+
+            attributes.put(
+                    "razorpay_payment_id",
+                    request.getRazorpayPaymentId()
+            );
+
+            attributes.put(
+                    "razorpay_signature",
+                    request.getRazorpaySignature()
+            );
+
+            boolean valid =
+                    Utils.verifyPaymentSignature(
+                            attributes,
+                            razorpayProperties.getKeySecret()
+                    );
+
+            if (!valid) {
+                throw new RuntimeException(
+                        "Invalid payment signature"
+                );
+            }
+
+            Payment payment =
+                    paymentRepository
+                            .findByRazorpayOrderId(
+                                    request.getRazorpayOrderId()
+                            )
+                            .orElseThrow(() ->
+                                    new PaymentNotFoundException(
+                                            "Payment not found"
+                                    )
+                            );
+            if (payment.getStatus() == PaymentStatus.SUCCESS) {
+                return;
+            }
+
+            payment.setRazorpayPaymentId(
+                    request.getRazorpayPaymentId()
+            );
+
+            payment.setRazorpaySignature(
+                    request.getRazorpaySignature()
+            );
+
+            payment.setStatus(
+                    PaymentStatus.SUCCESS
+            );
+
+            payment.setUpdatedAt(
+                    LocalDateTime.now()
+            );
+
+            paymentRepository.save(payment);
+
+            Order order =
+                    payment.getOrder();
+
+            order.setStatus(
+                    OrderStatus.PAID
+            );
+
+            order.setUpdatedAt(
+                    LocalDateTime.now()
+            );
+
+            for (OrderItem item : order.getItems()) {
+
+                Product product = item.getProduct();
+
+                int availableStock =
+                        product.getStockQuantity();
+
+                int orderedQuantity =
+                        item.getQuantity();
+
+                if (availableStock < orderedQuantity) {
+
+                    throw new IllegalStateException(
+                            "Insufficient stock for product: "
+                                    + product.getName()
+                    );
+                }
+
+                product.setStockQuantity(
+                        availableStock - orderedQuantity
+                );
+
+                productRepository.save(product);
+            }
+
+            orderRepository.save(order);
+
+        } catch (Exception e) {
+
+            throw new RuntimeException(
+                    "Payment verification failed",
+                    e
+            );
+        }
     }
 }

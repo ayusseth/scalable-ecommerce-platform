@@ -1,39 +1,61 @@
 package com.ayush.ecommerce.module.product.controller;
 
+import com.ayush.ecommerce.exception.ProductNotFoundException;
 import com.ayush.ecommerce.module.product.dto.CreateProductRequest;
+import com.ayush.ecommerce.module.product.dto.ProductDetailResponse;
 import com.ayush.ecommerce.module.product.dto.ProductResponse;
 import com.ayush.ecommerce.module.product.dto.UpdateProductRequest;
 import com.ayush.ecommerce.module.product.service.ProductService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
+import java.util.List;
+
 @RestController
-@RequestMapping("/api/v1/admin/products")
+@RequestMapping("/api/v1/products")
 @RequiredArgsConstructor
 public class ProductController {
     private final ProductService productService;
 
 
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public ProductResponse createProduct(
-            @Valid @RequestBody CreateProductRequest request
-            ){
-        return productService.createProduct(request);
+
+
+    @GetMapping
+    public Page<ProductResponse> getProducts(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "asc") String direction
+    ){
+        return productService.getProducts(page, size, sortBy, direction);
     }
 
-    @PutMapping("/{id}")
-    public ProductResponse updateProduct(
-            @PathVariable Long id,
-            @Valid @RequestBody
-            UpdateProductRequest request){
-        return productService.updateProduct(id, request);
+    @GetMapping("/{id}")
+    public ProductDetailResponse getProductById(@PathVariable Long id){
+        return productService.getProductById(id);
     }
 
-    @DeleteMapping("/{id}")
-    public void deleteProduct(@PathVariable Long id){
-        productService.deleteProduct(id);
+    @GetMapping("/search")
+    public List<ProductResponse> searchProducts(@RequestParam String keyword){
+        return productService.searchProducts(keyword);
     }
+
+
+    @GetMapping("/category/{categoryId}")
+    public List<ProductResponse> getProductByCategory(@PathVariable Long categoryId){
+        return productService.getProductsByCategory(categoryId);
+    }
+
+    @GetMapping("/filter")
+    public List<ProductResponse> filterProducts(@RequestParam(required = false)
+                                                Long categoryId,
+                                                @RequestParam BigDecimal minPrice,
+                                                @RequestParam BigDecimal maxPrice){
+        return productService.filterProducts(categoryId, minPrice, maxPrice);
+    }
+
 }
