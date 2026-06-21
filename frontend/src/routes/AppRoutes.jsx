@@ -1,5 +1,12 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
+import HomePage from "../pages/home/HomePage";
+import LoginPage from "../pages/auth/LoginPage";
+import RegisterPage from "../pages/auth/RegisterPage";
+import ProductsPage from "../pages/products/ProductsPage";
+import CartPage from "../pages/cart/CartPage";
+import OrdersPage from "../pages/orders/OrdersPage";
+
 function AppRoutes() {
   return (
     <BrowserRouter>
@@ -7,27 +14,32 @@ function AppRoutes() {
 
         <Route
           path="/"
-          element={<h1>Home Page</h1>}
+          element={<HomePage />}
         />
 
         <Route
           path="/login"
-          element={<h1>Login Page</h1>}
+          element={<LoginPage />}
         />
 
         <Route
           path="/register"
-          element={<h1>Register Page</h1>}
+          element={<RegisterPage />}
         />
 
         <Route
           path="/products"
-          element={<h1>Products Page</h1>}
+          element={<ProductsPage />}
         />
 
         <Route
           path="/cart"
-          element={<h1>Cart Page</h1>}
+          element={<CartPage />}
+        />
+
+        <Route
+          path="/orders"
+          element={<OrdersPage />}
         />
 
       </Routes>
