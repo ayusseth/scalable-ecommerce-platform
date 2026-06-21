@@ -57,6 +57,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Cacheable("products")
     public List<ProductResponse> getAllProducts() {
         return productRepository.findAll()
                 .stream()
@@ -78,6 +79,9 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @Cacheable(value = "product", key = "#productId")
     public ProductDetailResponse getProductById(Long productId) {
+        System.out.println(
+                "Fetching product from DATABASE..."
+        );
         Product product = productRepository
                 .findByIdAndActiveTrue(productId)
                 .orElseThrow(()->new ProductNotFoundException(
@@ -151,7 +155,10 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    @Cacheable("products")
+    @Cacheable(
+            value = "products",
+            key = "#page + '-' + #size + '-' + #sortBy + '-' + #direction"
+    )
     public Page<ProductResponse> getProducts(int page, int size, String sortBy, String direction) {
         Sort sort = direction.equalsIgnoreCase("desc")
                 ? Sort.by(sortBy).descending()
