@@ -6,7 +6,7 @@ import { useCart } from "../store/cartStore";
 function Navbar() {
   const navigate = useNavigate();
 
-  const { logout, isAuthenticated } = useAuth();
+  const { logout, isAuthenticated, user } = useAuth();
 
   const { cartItems } = useCart();
 
@@ -63,7 +63,13 @@ function Navbar() {
               <Link to="/register">Register</Link>
             </>
           ) : (
-            <button onClick={handleLogout}>Logout</button>
+            <>
+              <span className="text-sm text-gray-300">Hi, {user?.name}</span>
+
+              <button onClick={handleLogout} className="text-red-400">
+                Logout
+              </button>
+            </>
           )}
         </div>
       </div>

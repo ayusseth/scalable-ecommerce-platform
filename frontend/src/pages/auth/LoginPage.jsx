@@ -7,7 +7,6 @@ import { loginUser } from "../../services/authService";
 import { useAuth } from "../../store/authStore";
 
 function LoginPage() {
-
   const navigate = useNavigate();
 
   const { login } = useAuth();
@@ -20,68 +19,47 @@ function LoginPage() {
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
-
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
     });
-
   };
 
   const handleSubmit = async (e) => {
-
     e.preventDefault();
 
     try {
-
       setLoading(true);
 
-      const response =
-        await loginUser({
-          email: formData.email,
-          password: formData.password,
-        });
+      const response = await loginUser({
+        email: formData.email,
+        password: formData.password,
+      });
 
-      login(
-        response.accessToken
-      );
+      login(response.accessToken, {
+        userId: response.userId,
+        name: response.name,
+        email: response.email,
+      });
 
-      alert(
-        "Login successful"
-      );
+      alert("Login successful");
 
       navigate("/");
-
     } catch (error) {
-
       console.error(error);
 
-      alert(
-        "Invalid email or password"
-      );
-
+      alert("Invalid email or password");
     } finally {
-
       setLoading(false);
-
     }
-
   };
 
   return (
     <MainLayout>
-
       <div className="max-w-md mx-auto p-8">
+        <h1 className="text-3xl font-bold mb-6">Login</h1>
 
-        <h1 className="text-3xl font-bold mb-6">
-          Login
-        </h1>
-
-        <form
-          onSubmit={handleSubmit}
-          className="space-y-4"
-        >
-
+        <form onSubmit={handleSubmit} className="space-y-4">
           <input
             type="email"
             name="email"
@@ -105,18 +83,12 @@ function LoginPage() {
             disabled={loading}
             className="w-full bg-blue-600 text-white p-3 rounded"
           >
-            {loading
-              ? "Logging in..."
-              : "Login"}
+            {loading ? "Logging in..." : "Login"}
           </button>
-
         </form>
-
       </div>
-
     </MainLayout>
   );
-
 }
 
 export default LoginPage;
