@@ -6,31 +6,58 @@ import ProductCard from "../../components/ProductCard";
 function ProductsPage() {
 
   const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-useEffect(() => {
+  useEffect(() => {
 
-  const fetchProducts = async () => {
+    const fetchProducts = async () => {
 
-    try {
+      try {
 
-      const data = await getProducts();
+        const data = await getProducts();
 
         console.log("API Response:", data);
-      setProducts(data);
 
-    } catch (error) {
+        setProducts(data);
 
-      console.error(error);
+      } catch (error) {
 
-    }
+        console.error(error);
 
-  };
+        setError("Unable to load products");
 
-  fetchProducts();
+      } finally {
 
-}, []);
+        setLoading(false);
 
-  
+      }
+
+    };
+
+    fetchProducts();
+
+  }, []);
+
+  if (loading) {
+    return (
+      <MainLayout>
+        <div className="p-10 text-xl">
+          Loading products...
+        </div>
+      </MainLayout>
+    );
+  }
+
+  if (error) {
+    return (
+      <MainLayout>
+        <div className="p-10 text-xl text-red-600">
+          {error}
+        </div>
+      </MainLayout>
+    );
+  }
 
   return (
     <MainLayout>
@@ -43,12 +70,12 @@ useEffect(() => {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 
-          {products.map(product => (
+          {products.map((product) => (
 
             <ProductCard
-    key={product.id}
-    product={product}
-  />
+              key={product.id}
+              product={product}
+            />
 
           ))}
 
