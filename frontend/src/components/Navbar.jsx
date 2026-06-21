@@ -17,7 +17,26 @@ function Navbar() {
 
           <Link to="/products">Products</Link>
 
-          <Link to="/cart">Cart ({cartCount})</Link>
+          <Link to="/cart" className="relative">
+            Cart
+            {cartCount > 0 && (
+              <span
+                className="
+                    absolute
+                      -top-2
+                       -right-4
+                       bg-red-600
+                       text-white
+                        text-xs
+                        px-2
+                      py-0.5
+                      rounded-full
+                      "
+                >
+                {cartCount}
+              </span>
+            )}
+          </Link>
 
           <Link to="/orders">Orders</Link>
 
