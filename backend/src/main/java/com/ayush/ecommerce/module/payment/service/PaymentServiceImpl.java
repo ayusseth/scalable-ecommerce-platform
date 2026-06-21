@@ -325,9 +325,7 @@ public class PaymentServiceImpl implements PaymentService {
                             );
 
             if (payment.getStatus() == PaymentStatus.SUCCESS) {
-                throw new IllegalStateException(
-                        "Payment already verified"
-                );
+                return;
             }
 
             processSuccessfulPayment(
