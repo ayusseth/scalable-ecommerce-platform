@@ -3,8 +3,12 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../store/authStore";
 import { useCart } from "../store/cartStore";
 
+import { useState } from "react";
+
 function Navbar() {
   const navigate = useNavigate();
+
+  const [showMenu, setShowMenu] = useState(false);
 
   const { logout, isAuthenticated, user } = useAuth();
 
@@ -63,13 +67,81 @@ function Navbar() {
               <Link to="/register">Register</Link>
             </>
           ) : (
-            <>
-              <span className="text-sm text-gray-300">Hi, {user?.name}</span>
-
-              <button onClick={handleLogout} className="text-red-400">
-                Logout
+            <div className="relative">
+              <button
+                onClick={() => setShowMenu(!showMenu)}
+                className="flex items-center gap-2"
+              >
+                👤 {user?.name}
               </button>
-            </>
+
+              {showMenu && (
+                <div
+                  className="
+      absolute
+      right-0
+      mt-2
+      w-48
+      bg-white
+      text-black
+      rounded
+      shadow-lg
+      z-50
+    "
+                >
+                  <Link
+                    to="/profile"
+                    className="
+        block
+        px-4
+        py-2
+        hover:bg-gray-100
+      "
+                  >
+                    My Profile
+                  </Link>
+
+                  <Link
+                    to="/orders"
+                    className="
+        block
+        px-4
+        py-2
+        hover:bg-gray-100
+      "
+                  >
+                    My Orders
+                  </Link>
+
+                  <Link
+                    to="/addresses"
+                    className="
+        block
+        px-4
+        py-2
+        hover:bg-gray-100
+      "
+                  >
+                    Addresses
+                  </Link>
+
+                  <button
+                    onClick={handleLogout}
+                    className="
+        block
+        w-full
+        text-left
+        px-4
+        py-2
+        text-red-600
+        hover:bg-gray-100
+      "
+                  >
+                    Logout
+                  </button>
+                </div>
+              )}
+            </div>
           )}
         </div>
       </div>

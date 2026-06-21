@@ -8,6 +8,8 @@ import CartPage from "../pages/cart/CartPage";
 import OrdersPage from "../pages/orders/OrdersPage";
 import VerifyOtpPage from "../pages/auth/VerifyOtpPage";
 import ProtectedRoute from "../components/common/ProtectedRoute";
+import ProfilePage from "../pages/profile/ProfilePage";
+import AddressPage from "../pages/address/AddressPage";
 
 function AppRoutes() {
   return (
@@ -23,7 +25,8 @@ function AppRoutes() {
 
         <Route path="/cart" element={<CartPage />} />
 
-        <Route path="/orders"
+        <Route
+          path="/orders"
           element={
             <ProtectedRoute>
               <OrdersPage />
@@ -34,6 +37,24 @@ function AppRoutes() {
         <Route path="/verify-otp" element={<VerifyOtpPage />} />
 
         <Route path="/orders" element={<OrdersPage />} />
+
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <ProfilePage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/addresses"
+          element={
+            <ProtectedRoute>
+              <AddressPage />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
     </BrowserRouter>
   );
