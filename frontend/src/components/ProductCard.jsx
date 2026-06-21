@@ -1,4 +1,9 @@
+import { useCart } from "../store/cartStore";
+
 function ProductCard({ product }) {
+
+  const { addToCart } = useCart();
+
   return (
     <div className="border rounded-lg p-4 shadow hover:shadow-lg transition">
 
@@ -19,6 +24,7 @@ function ProductCard({ product }) {
       </p>
 
       <button
+        onClick={() => addToCart(product)}
         className="mt-4 w-full bg-blue-600 text-white py-2 rounded"
       >
         Add To Cart
