@@ -4,7 +4,7 @@ import { useCart } from "../../store/cartStore";
 function CartPage() {
 
   const { cartItems } = useCart();
-  
+
   console.log("CART ITEMS:", cartItems);
 
   return (
@@ -28,11 +28,14 @@ function CartPage() {
                 className="border p-4 rounded"
               >
                 <h2 className="font-semibold">
-                  {item.name}
+                  {item.product.name}
                 </h2>
 
                 <p>
-                  ₹ {item.price}
+                  ₹ {item.product.price}
+                </p>
+                <p>
+                    Quantity: {item.quantity}
                 </p>
 
               </div>
