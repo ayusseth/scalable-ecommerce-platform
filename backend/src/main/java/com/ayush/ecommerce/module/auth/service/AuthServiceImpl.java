@@ -123,6 +123,9 @@ public class AuthServiceImpl implements AuthService{
         return LoginResponse.builder()
                 .accessToken(token)
                 .tokenType("Bearer")
+                .userId(user.getId())
+                .name(user.getName())
+                .email(user.getEmail())
                 .build();
     }
 
