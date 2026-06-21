@@ -47,6 +47,7 @@ public class AuthController
     @PostMapping("/send-otp")
     public String sendOtp(@Valid @RequestBody
                           SendOtpRequest request){
+        System.out.println("SEND OTP API HIT");
         User user = userRepository
                 .findByEmail(request.getEmail())
                 .orElse(null);
@@ -97,6 +98,9 @@ public class AuthController
                 );
 
         user.setEmailVerified(true);
+
+        user.setEnabled(true);
+
         user.setUpdatedAt(LocalDateTime.now());
 
         userRepository.save(user);

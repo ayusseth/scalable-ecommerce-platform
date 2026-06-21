@@ -60,7 +60,7 @@ public class AuthServiceImpl implements AuthService{
                         )
                 )
                 .roles(Set.of(userRole))
-                .enabled(true)
+                .enabled(false)
                 .emailVerified(false)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
