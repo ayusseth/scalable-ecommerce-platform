@@ -1,8 +1,10 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import MainLayout from "../../layouts/MainLayout";
 import { registerUser } from "../../services/authService";
 
 function RegisterPage() {
+  const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     name: "",
@@ -12,30 +14,22 @@ function RegisterPage() {
   });
 
   const handleChange = (e) => {
-
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
     });
-
   };
 
   const handleSubmit = async (e) => {
-
     e.preventDefault();
 
-    if (
-      formData.password !==
-      formData.confirmPassword
-    ) {
-
+    if (formData.password !== formData.confirmPassword) {
       alert("Passwords do not match");
 
       return;
     }
 
     try {
-
       await registerUser({
         name: formData.name,
         email: formData.email,
@@ -44,30 +38,24 @@ function RegisterPage() {
 
       alert("Registration successful");
 
+      navigate("/verify-otp", {
+        state: {
+          email: formData.email,
+        },
+      });
     } catch (error) {
-
       console.error(error);
 
       alert("Registration failed");
-
     }
-
   };
 
   return (
     <MainLayout>
-
       <div className="max-w-md mx-auto p-8">
+        <h1 className="text-3xl font-bold mb-6">Register</h1>
 
-        <h1 className="text-3xl font-bold mb-6">
-          Register
-        </h1>
-
-        <form
-          onSubmit={handleSubmit}
-          className="space-y-4"
-        >
-
+        <form onSubmit={handleSubmit} className="space-y-4">
           <input
             type="text"
             name="name"
@@ -110,14 +98,10 @@ function RegisterPage() {
           >
             Register
           </button>
-
         </form>
-
       </div>
-
     </MainLayout>
   );
-
 }
 
 export default RegisterPage;
