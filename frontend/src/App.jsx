@@ -1,15 +1,11 @@
-import './App.css'
-
 function App() {
   return (
-    <div className="min-h-screen flex items-center justify-center">
-      <h1 className="text-5xl font-bold">
-        Ayush Ecommerce
+    <div className="p-10">
+      <h1 className="text-4xl font-bold">
+        Ayush Ecommerce Frontend
       </h1>
     </div>
-  )
+  );
 }
 
-
-
-export default App
+export default App;
