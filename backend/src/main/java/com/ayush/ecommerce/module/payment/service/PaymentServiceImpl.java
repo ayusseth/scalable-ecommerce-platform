@@ -323,102 +323,17 @@ public class PaymentServiceImpl implements PaymentService {
                                             "Payment not found"
                                     )
                             );
+
             if (payment.getStatus() == PaymentStatus.SUCCESS) {
                 throw new IllegalStateException(
                         "Payment already verified"
                 );
             }
 
-            payment.setRazorpayPaymentId(
-                    request.getRazorpayPaymentId()
-            );
-
-            payment.setRazorpaySignature(
+            processSuccessfulPayment(
+                    payment,
+                    request.getRazorpayPaymentId(),
                     request.getRazorpaySignature()
-            );
-
-            payment.setStatus(
-                    PaymentStatus.SUCCESS
-            );
-
-            payment.setUpdatedAt(
-                    LocalDateTime.now()
-            );
-
-            paymentRepository.save(payment);
-
-            Order order =
-                    payment.getOrder();
-            if (order.getStatus() != OrderStatus.PENDING) {
-                throw new IllegalStateException(
-                        "Order is not eligible for payment"
-                );
-            }
-            order.setStatus(
-                    OrderStatus.PAID
-            );
-
-            order.setUpdatedAt(
-                    LocalDateTime.now()
-            );
-
-            if(order.getItems() == null
-                    || order.getItems().isEmpty()){
-
-                throw new IllegalStateException(
-                        "Order items not found"
-                );
-            }
-
-            for (OrderItem item : order.getItems()) {
-
-                Product product = item.getProduct();
-
-                int availableStock =
-                        product.getStockQuantity();
-
-                int orderedQuantity =
-                        item.getQuantity();
-
-                if (availableStock < orderedQuantity) {
-
-                    throw new IllegalStateException(
-                            "Insufficient stock for product: "
-                                    + product.getName()
-                    );
-                }
-
-                product.setStockQuantity(
-                        availableStock - orderedQuantity
-                );
-
-                productRepository.save(product);
-            }
-
-            orderRepository.save(order);
-
-            emailService.sendEmail(
-                    order.getUser().getEmail(),
-                    "Payment Successful",
-                    """
-                    Hello %s,
-            
-                    Your payment has been successfully received.
-            
-                    Order Number: %s
-                    Payment Reference: %s
-                    Amount: ₹%s
-            
-                    Thank you for shopping with us.
-            
-                    Team E-Commerce
-                    """
-                            .formatted(
-                                    order.getUser().getName(),
-                                    order.getOrderNumber(),
-                                    payment.getPaymentReference(),
-                                    payment.getAmount()
-                            )
             );
 
         } catch (Exception e) {
@@ -429,4 +344,97 @@ public class PaymentServiceImpl implements PaymentService {
             );
         }
     }
+
+    private void processSuccessfulPayment(
+            Payment payment,
+            String razorpayPaymentId,
+            String razorpaySignature
+    ){
+        payment.setRazorpayPaymentId(
+                razorpayPaymentId
+        );
+
+        payment.setRazorpaySignature(
+                razorpaySignature
+        );
+
+        payment.setStatus(
+                PaymentStatus.SUCCESS
+        );
+        payment.setUpdatedAt(
+                LocalDateTime.now()
+        );
+
+        paymentRepository.save(payment);
+
+        Order order = payment.getOrder();
+
+        order.setStatus(
+                OrderStatus.PAID
+        );
+        order.setUpdatedAt(
+                LocalDateTime.now()
+        );
+
+        for (OrderItem item : order.getItems()) {
+
+            Product product = item.getProduct();
+
+            int availableStock =
+                    product.getStockQuantity();
+
+            int orderedQuantity =
+                    item.getQuantity();
+
+            if (availableStock < orderedQuantity) {
+
+                throw new IllegalStateException(
+                        "Insufficient stock for product: "
+                                + product.getName()
+                );
+            }
+
+            product.setStockQuantity(
+                    availableStock - orderedQuantity
+            );
+
+            productRepository.save(product);
+
+
+        }
+
+        if (order.getItems() == null || order.getItems().isEmpty()) {
+            throw new IllegalStateException(
+                    "Order items not found"
+            );
+        }
+
+        orderRepository.save(order);
+
+        emailService.sendEmail(
+                order.getUser().getEmail(),
+                "Payment Successful",
+                """
+                Hello %s,
+        
+                Your payment has been successfully received.
+        
+                Order Number: %s
+                Payment Reference: %s
+                Amount: ₹%s
+        
+                Thank you for shopping with us.
+        
+                Team E-Commerce
+                """
+                        .formatted(
+                                order.getUser().getName(),
+                                order.getOrderNumber(),
+                                payment.getPaymentReference(),
+                                payment.getAmount()
+                        )
+        );
+
+    }
+
 }
