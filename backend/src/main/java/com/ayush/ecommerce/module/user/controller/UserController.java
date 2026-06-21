@@ -1,20 +1,21 @@
 package com.ayush.ecommerce.module.user.controller;
-import org.springframework.security.core.Authentication;
+
+import com.ayush.ecommerce.module.user.dto.UserProfileResponse;
+import com.ayush.ecommerce.module.user.service.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-
 @RestController
-public class UserController
-{
+@RequiredArgsConstructor
+@RequestMapping("/api/v1/users")
+public class UserController {
 
-    @GetMapping("/api/v1/users/me")
-    public String currentUser(Authentication authentication){
-        return authentication.getName();
-    }
+    private final UserService userService;
 
-    @GetMapping("/api/v1/user/profile")
-    public String profile(){
-        return "User Profile";
+    @GetMapping("/me")
+    public UserProfileResponse getCurrentUser() {
+        return userService.getCurrentUser();
     }
 }
