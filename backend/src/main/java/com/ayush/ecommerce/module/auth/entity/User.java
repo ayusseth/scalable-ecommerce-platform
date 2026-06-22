@@ -1,5 +1,6 @@
 package com.ayush.ecommerce.module.auth.entity;
 
+import com.ayush.ecommerce.module.address.entity.Address;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -53,4 +54,13 @@ public class User
 
     @Column(nullable = false)
     private LocalDateTime updatedAt;
+
+    @Builder.Default
+    @OneToMany(
+            mappedBy = "user",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true,
+            fetch = FetchType.LAZY
+    )
+    private Set<Address> addresses = new HashSet<>();
 }
