@@ -11,6 +11,7 @@ import ProtectedRoute from "../components/common/ProtectedRoute";
 import ProfilePage from "../pages/profile/ProfilePage";
 import AddressPage from "../pages/address/AddressPage";
 import CreateAddressPage from "../pages/address/CreateAddressPage";
+import CheckoutPage from "../pages/checkout/CheckoutPage";
 
 function AppRoutes() {
   return (
@@ -58,6 +59,15 @@ function AppRoutes() {
           element={
             <ProtectedRoute>
               <AddressPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/checkout"
+          element={
+            <ProtectedRoute>
+              <CheckoutPage />
             </ProtectedRoute>
           }
         />

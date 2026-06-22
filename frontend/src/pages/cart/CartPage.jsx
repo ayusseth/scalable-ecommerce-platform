@@ -1,9 +1,12 @@
 import MainLayout from "../../layouts/MainLayout";
 import { useCart } from "../../store/cartStore";
+import { useNavigate } from "react-router-dom";
 
 function CartPage() {
   const { cartItems, increaseQuantity, decreaseQuantity, removeFromCart } =
     useCart();
+
+  const navigate = useNavigate();
 
   const totalAmount = cartItems.reduce(
     (total, item) => total + item.product.price * item.quantity,
@@ -58,6 +61,13 @@ function CartPage() {
               <h2 className="text-3xl font-bold">
                 Total: ₹ {totalAmount.toFixed(2)}
               </h2>
+              <button
+                onClick={() => navigate("/checkout")}
+                className="mt-4  bg-green-600 text-white  px-6  py-3 rounded
+  "
+              >
+                Proceed To Checkout
+              </button>
             </div>
           </div>
         )}
