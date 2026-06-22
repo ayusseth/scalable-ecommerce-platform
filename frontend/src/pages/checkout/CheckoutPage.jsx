@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
 
+import { useCart } from "../../store/cartStore";
+import { createOrder } from "../../services/orderService";
+
 import MainLayout from "../../layouts/MainLayout";
 
 import { getAddresses } from "../../services/addressService";
@@ -10,6 +13,34 @@ function CheckoutPage() {
   const [loading, setLoading] = useState(true);
 
   const [selectedAddress, setSelectedAddress] = useState(null);
+
+  const { cartItems } = useCart();
+
+  const handleCreateOrder = async () => {
+    try {
+      if (!selectedAddress) {
+        alert("Please select an address");
+        return;
+      }
+
+      const request = {
+        items: cartItems.map((item) => ({
+          productId: item.product.id,
+          quantity: item.quantity,
+        })),
+        addressId: selectedAddress,
+      };
+
+      const order = await createOrder(request);
+
+      console.log("ORDER CREATED", order);
+
+      alert(`Order Created Successfully: ${order.orderNumber}`);
+    } catch (error) {
+      console.error(error);
+      alert("Failed to create order");
+    }
+  };
 
   const loadAddresses = async () => {
     try {
@@ -88,6 +119,20 @@ function CheckoutPage() {
               <p>{address.postalCode}</p>
             </div>
           ))}
+        </div>
+        <div className="mt-8">
+          <button
+            onClick={handleCreateOrder}
+            className="
+      bg-green-600
+      text-white
+      px-6
+      py-3
+      rounded
+    "
+          >
+            Create Order
+          </button>
         </div>
       </div>
     </MainLayout>
