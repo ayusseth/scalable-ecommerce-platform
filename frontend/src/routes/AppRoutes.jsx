@@ -10,6 +10,7 @@ import VerifyOtpPage from "../pages/auth/VerifyOtpPage";
 import ProtectedRoute from "../components/common/ProtectedRoute";
 import ProfilePage from "../pages/profile/ProfilePage";
 import AddressPage from "../pages/address/AddressPage";
+import CreateAddressPage from "../pages/address/CreateAddressPage";
 
 function AppRoutes() {
   return (
@@ -33,10 +34,15 @@ function AppRoutes() {
             </ProtectedRoute>
           }
         />
-
+        <Route
+          path="/addresses/new"
+          element={
+            <ProtectedRoute>
+              <CreateAddressPage />
+            </ProtectedRoute>
+          }
+        />
         <Route path="/verify-otp" element={<VerifyOtpPage />} />
-
-        <Route path="/orders" element={<OrdersPage />} />
 
         <Route
           path="/profile"

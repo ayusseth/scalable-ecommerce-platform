@@ -7,18 +7,16 @@ import {
   deleteAddress,
   setDefaultAddress,
 } from "../../services/addressService";
+import { Link } from "react-router-dom";
 
 function AddressesPage() {
-  const [addresses, setAddresses] =
-    useState([]);
+  const [addresses, setAddresses] = useState([]);
 
-  const [loading, setLoading] =
-    useState(true);
+  const [loading, setLoading] = useState(true);
 
   const loadAddresses = async () => {
     try {
-      const data =
-        await getAddresses();
+      const data = await getAddresses();
 
       setAddresses(data);
     } catch (error) {
@@ -38,9 +36,7 @@ function AddressesPage() {
 
       await loadAddresses();
 
-      alert(
-        "Address deleted successfully"
-      );
+      alert("Address deleted successfully");
     } catch (error) {
       console.error(error);
     }
@@ -52,9 +48,7 @@ function AddressesPage() {
 
       await loadAddresses();
 
-      alert(
-        "Default address updated"
-      );
+      alert("Default address updated");
     } catch (error) {
       console.error(error);
     }
@@ -63,9 +57,7 @@ function AddressesPage() {
   if (loading) {
     return (
       <MainLayout>
-        <div className="p-10">
-          Loading...
-        </div>
+        <div className="p-10">Loading...</div>
       </MainLayout>
     );
   }
@@ -73,65 +65,54 @@ function AddressesPage() {
   return (
     <MainLayout>
       <div className="max-w-5xl mx-auto p-10">
-
-        <h1 className="text-4xl font-bold mb-8">
-          My Addresses
-        </h1>
-
+        <h1 className="text-4xl font-bold mb-8">My Addresses</h1>
+        <div className="mb-6">
+          <Link
+            to="/addresses/new"
+            className="
+            bg-blue-600
+            text-white
+            px-4
+            py-2
+            rounded
+            "
+          >
+            Add Address
+          </Link>
+        </div>
         {addresses.length === 0 ? (
-          <p>
-            No addresses found
-          </p>
+          <p>No addresses found</p>
         ) : (
           <div className="space-y-4">
-
-            {addresses.map(
-              (address) => (
-                <div
-                  key={address.id}
-                  className="
+            {addresses.map((address) => (
+              <div
+                key={address.id}
+                className="
                     border
                     rounded-lg
                     p-5
                     shadow-sm
                   "
-                >
-                  <h3 className="font-bold">
-                    {address.fullName}
-                  </h3>
+              >
+                <h3 className="font-bold">{address.fullName}</h3>
 
-                  <p>
-                    {address.phoneNumber}
-                  </p>
+                <p>{address.phoneNumber}</p>
 
-                  <p>
-                    {address.addressLine1}
-                  </p>
+                <p>{address.addressLine1}</p>
 
-                  {address.addressLine2 && (
-                    <p>
-                      {
-                        address.addressLine2
-                      }
-                    </p>
-                  )}
+                {address.addressLine2 && <p>{address.addressLine2}</p>}
 
-                  <p>
-                    {address.city},{" "}
-                    {address.state}
-                  </p>
+                <p>
+                  {address.city}, {address.state}
+                </p>
 
-                  <p>
-                    {address.country}
-                  </p>
+                <p>{address.country}</p>
 
-                  <p>
-                    {address.postalCode}
-                  </p>
+                <p>{address.postalCode}</p>
 
-                  {address.defaultAddress && (
-                    <span
-                      className="
+                {address.defaultAddress && (
+                  <span
+                    className="
                         inline-block
                         mt-2
                         bg-green-100
@@ -141,57 +122,44 @@ function AddressesPage() {
                         rounded
                         text-sm
                       "
-                    >
-                      Default Address
-                    </span>
-                  )}
+                  >
+                    Default Address
+                  </span>
+                )}
 
-                  <div className="flex gap-3 mt-4">
-
-                    {!address.defaultAddress && (
-                      <button
-                        onClick={() =>
-                          handleDefault(
-                            address.id
-                          )
-                        }
-                        className="
+                <div className="flex gap-3 mt-4">
+                  {!address.defaultAddress && (
+                    <button
+                      onClick={() => handleDefault(address.id)}
+                      className="
                           bg-blue-600
                           text-white
                           px-4
                           py-2
                           rounded
                         "
-                      >
-                        Make Default
-                      </button>
-                    )}
+                    >
+                      Make Default
+                    </button>
+                  )}
 
-                    <button
-                      onClick={() =>
-                        handleDelete(
-                          address.id
-                        )
-                      }
-                      className="
+                  <button
+                    onClick={() => handleDelete(address.id)}
+                    className="
                         bg-red-600
                         text-white
                         px-4
                         py-2
                         rounded
                       "
-                    >
-                      Delete
-                    </button>
-
-                  </div>
+                  >
+                    Delete
+                  </button>
                 </div>
-              )
-            )}
-
+              </div>
+            ))}
           </div>
         )}
-
       </div>
     </MainLayout>
   );
