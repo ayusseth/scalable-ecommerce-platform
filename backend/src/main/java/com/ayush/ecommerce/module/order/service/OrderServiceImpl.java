@@ -176,18 +176,47 @@ public class OrderServiceImpl implements OrderService{
     @Override
     @Transactional(readOnly = true)
     public List<OrderResponse> getMyOrders(String userEmail) {
+
         return orderRepository
                 .findByUserEmailOrderByCreatedAtDesc(userEmail)
                 .stream()
-                .map(order ->
-                        OrderResponse.builder()
-                                .orderId(order.getId())
-                                .orderNumber(order.getOrderNumber())
-                                .status(order.getStatus())
-                                .totalAmount(order.getTotalAmount())
-                                .items(List.of())
-                                .build()
-                )
+                .map(order -> {
+
+                    List<OrderItemResponse> itemResponses =
+                            orderItemRepository
+                                    .findByOrderOrderNumber(
+                                            order.getOrderNumber()
+                                    )
+                                    .stream()
+                                    .map(item ->
+                                            OrderItemResponse.builder()
+                                                    .productId(
+                                                            item.getProduct().getId()
+                                                    )
+                                                    .productName(
+                                                            item.getProduct().getName()
+                                                    )
+                                                    .quantity(
+                                                            item.getQuantity()
+                                                    )
+                                                    .unitPrice(
+                                                            item.getUnitPrice()
+                                                    )
+                                                    .subtotal(
+                                                            item.getSubtotal()
+                                                    )
+                                                    .build()
+                                    )
+                                    .toList();
+
+                    return OrderResponse.builder()
+                            .orderId(order.getId())
+                            .orderNumber(order.getOrderNumber())
+                            .status(order.getStatus())
+                            .totalAmount(order.getTotalAmount())
+                            .items(itemResponses)
+                            .build();
+                })
                 .toList();
     }
 
