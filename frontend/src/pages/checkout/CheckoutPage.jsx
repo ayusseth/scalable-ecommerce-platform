@@ -1,7 +1,13 @@
+/* global Razorpay */
 import { useEffect, useState } from "react";
 
 import { useCart } from "../../store/cartStore";
 import { createOrder } from "../../services/orderService";
+
+import {
+  createRazorpayOrder,
+  verifyPayment,
+} from "../../services/paymentService";
 
 import MainLayout from "../../layouts/MainLayout";
 
@@ -23,7 +29,7 @@ function CheckoutPage() {
         return;
       }
 
-      const request = {
+      const orderRequest = {
         items: cartItems.map((item) => ({
           productId: item.product.id,
           quantity: item.quantity,
@@ -31,14 +37,57 @@ function CheckoutPage() {
         addressId: selectedAddress,
       };
 
-      const order = await createOrder(request);
+      const order = await createOrder(orderRequest);
 
-      console.log("ORDER CREATED", order);
+      console.log("ORDER", order);
 
-      alert(`Order Created Successfully: ${order.orderNumber}`);
+      const razorpayOrder = await createRazorpayOrder(order.orderId);
+
+      console.log("RAZORPAY ORDER", razorpayOrder);
+
+      const options = {
+        key: razorpayOrder.keyId,
+
+        amount: razorpayOrder.amount,
+
+        currency: razorpayOrder.currency,
+
+        order_id: razorpayOrder.razorpayOrderId,
+
+        name: "Ayush Ecommerce",
+
+        description: "Order Payment",
+
+        handler: async function (response) {
+          try {
+            await verifyPayment({
+              razorpay_order_id: response.razorpay_order_id,
+
+              razorpay_payment_id: response.razorpay_payment_id,
+
+              razorpay_signature: response.razorpay_signature,
+            });
+
+            alert("Payment Successful");
+          } catch (error) {
+            console.error(error);
+
+            alert("Payment Verification Failed");
+          }
+        },
+
+        theme: {
+          color: "#2563eb",
+        },
+      };
+
+      const razorpay = new window.Razorpay(options);
+
+      razorpay.open();
     } catch (error) {
       console.error(error);
-      alert("Failed to create order");
+
+      alert("Checkout Failed");
     }
   };
 
