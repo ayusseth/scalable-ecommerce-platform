@@ -64,6 +64,8 @@ public class SecurityConfig
                         HttpMethod.GET,
                         "/api/v1/categories/**"
                         ).permitAll()
+                        .requestMatchers("/api/v1/addresses/**")
+                        .hasAnyRole("USER","ADMIN")
                         .requestMatchers("/api/v1/orders/**")
                         .hasAnyRole("USER","ADMIN")
                         .requestMatchers("/api/v1/payments/**")
