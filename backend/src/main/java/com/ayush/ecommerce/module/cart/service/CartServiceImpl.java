@@ -307,13 +307,6 @@ public class CartServiceImpl implements CartService {
 
             Product product = item.getProduct();
 
-            product.setStockQuantity(
-                    product.getStockQuantity()
-                            - item.getQuantity()
-            );
-
-            productRepository.save(product);
-
             OrderItem orderItem =
                     OrderItem.builder()
                             .order(savedOrder)
