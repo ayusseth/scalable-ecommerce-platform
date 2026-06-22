@@ -1,5 +1,6 @@
 package com.ayush.ecommerce.module.order.entity;
 
+import com.ayush.ecommerce.module.address.entity.Address;
 import com.ayush.ecommerce.module.auth.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -50,4 +51,7 @@ public class Order {
     )
     private List<OrderItem> items;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "address_id")
+    private Address address;
 }

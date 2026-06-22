@@ -1,6 +1,8 @@
 package com.ayush.ecommerce.module.order.service;
 
 import com.ayush.ecommerce.exception.*;
+import com.ayush.ecommerce.module.address.entity.Address;
+import com.ayush.ecommerce.module.address.repository.AddressRepository;
 import com.ayush.ecommerce.module.auth.entity.User;
 import com.ayush.ecommerce.module.auth.repository.UserRepository;
 import com.ayush.ecommerce.module.notification.service.EmailService;
@@ -35,6 +37,7 @@ public class OrderServiceImpl implements OrderService{
     private final OrderRepository orderRepository;
     private final OrderItemRepository orderItemRepository;
     private final EmailService emailService;
+    private final AddressRepository addressRepository;
 
     @Override
     @Transactional
@@ -48,6 +51,19 @@ public class OrderServiceImpl implements OrderService{
         User user = userRepository
                 .findByEmail(userEmail)
                 .orElseThrow(()-> new UserNotFoundException("User not found"));
+
+        Address address =
+                addressRepository
+                        .findByIdAndUser(
+                                request.getAddressId(),
+                                user
+                        )
+                        .orElseThrow(
+                                () -> new RuntimeException(
+                                        "Address not found"
+                                )
+                        );
+
         List<Long> productIds = request.getItems()
                 .stream()
                 .map(item->item.getProductId())
@@ -111,6 +127,7 @@ public class OrderServiceImpl implements OrderService{
         Order order = Order.builder()
                 .orderNumber(orderNumber)
                 .user(user)
+                .address(address)
                 .status(OrderStatus.PENDING)
                 .totalAmount(totalAmount)
                 .createdAt(LocalDateTime.now())
