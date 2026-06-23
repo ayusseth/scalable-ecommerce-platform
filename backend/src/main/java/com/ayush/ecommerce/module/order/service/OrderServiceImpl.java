@@ -222,6 +222,53 @@ public class OrderServiceImpl implements OrderService{
 
     @Override
     @Transactional(readOnly = true)
+    public List<OrderResponse> getAllOrders() {
+
+        return orderRepository
+                .findAllByOrderByCreatedAtDesc()
+                .stream()
+                .map(order -> {
+
+                    List<OrderItemResponse> itemResponses =
+                            orderItemRepository
+                                    .findByOrderOrderNumber(
+                                            order.getOrderNumber()
+                                    )
+                                    .stream()
+                                    .map(item ->
+                                            OrderItemResponse.builder()
+                                                    .productId(
+                                                            item.getProduct().getId()
+                                                    )
+                                                    .productName(
+                                                            item.getProduct().getName()
+                                                    )
+                                                    .quantity(
+                                                            item.getQuantity()
+                                                    )
+                                                    .unitPrice(
+                                                            item.getUnitPrice()
+                                                    )
+                                                    .subtotal(
+                                                            item.getSubtotal()
+                                                    )
+                                                    .build()
+                                    )
+                                    .toList();
+
+                    return OrderResponse.builder()
+                            .orderId(order.getId())
+                            .orderNumber(order.getOrderNumber())
+                            .status(order.getStatus())
+                            .totalAmount(order.getTotalAmount())
+                            .items(itemResponses)
+                            .build();
+                })
+                .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public OrderResponse getOrderDetails(String userEmail, String orderNumber) {
 
         Order order = orderRepository

@@ -15,6 +15,8 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
     List<Order> findByUserEmailOrderByCreatedAtDesc(String email);
 
+    List<Order> findAllByOrderByCreatedAtDesc();
+
     @Query("""
        SELECT COALESCE(SUM(o.totalAmount),0)
        FROM Order o

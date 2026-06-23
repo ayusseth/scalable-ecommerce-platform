@@ -13,6 +13,7 @@ import AddressPage from "../pages/address/AddressPage";
 import CreateAddressPage from "../pages/address/CreateAddressPage";
 import CheckoutPage from "../pages/checkout/CheckoutPage";
 import AdminDashboardPage from "../pages/admin/AdminDashboardPage";
+import AdminOrdersPage from "../pages/admin/AdminOrdersPage";
 
 function AppRoutes() {
   return (
@@ -73,15 +74,22 @@ function AppRoutes() {
           }
         />
         <Route
-  path="/admin/dashboard"
-  element={
-    <ProtectedRoute
-      allowedRoles={["ROLE_ADMIN"]}
-    >
-      <AdminDashboardPage />
-    </ProtectedRoute>
-  }
-/>
+          path="/admin/dashboard"
+          element={
+            <ProtectedRoute allowedRoles={["ROLE_ADMIN"]}>
+              <AdminDashboardPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/admin/orders"
+          element={
+            <ProtectedRoute allowedRoles={["ROLE_ADMIN"]}>
+              <AdminOrdersPage />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
     </BrowserRouter>
   );

@@ -15,6 +15,8 @@ public interface OrderService {
 
     List<OrderResponse> getMyOrders(String userEmail);
 
+    List<OrderResponse> getAllOrders();
+
     OrderResponse getOrderDetails(String userEmail, String orderNumber);
 
     OrderResponse updateOrderStatus(String orderNumber, UpdateOrderStatusRequest request);
