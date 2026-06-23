@@ -100,4 +100,20 @@ public class CategoryServiceImpl implements CategoryService {
                 .orElseThrow(()-> new RuntimeException("Category not found"));
         categoryRepository.delete(category);
     }
+
+    @Override
+    public List<CategoryResponse> getCategories() {
+
+        return categoryRepository
+                .findAll()
+                .stream()
+                .map(category ->
+                        CategoryResponse.builder()
+                                .id(category.getId())
+                                .name(category.getName())
+                                .description(category.getDescription())
+                                .build()
+                )
+                .toList();
+    }
 }

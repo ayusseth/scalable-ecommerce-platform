@@ -14,6 +14,14 @@ import CreateAddressPage from "../pages/address/CreateAddressPage";
 import CheckoutPage from "../pages/checkout/CheckoutPage";
 import AdminDashboardPage from "../pages/admin/AdminDashboardPage";
 import AdminOrdersPage from "../pages/admin/AdminOrdersPage";
+import AdminProductsPage from "../pages/admin/AdminProductsPage";
+import CreateProductPage from "../pages/admin/CreateProductPage";
+import EditProductPage from "../pages/admin/EditProductPage";
+
+import CreateCategoryPage from "../pages/admin/CreateCategoryPage";
+import EditCategoryPage from "../pages/admin/EditCategoryPage";
+
+import AdminCategoriesPage from "../pages/admin/AdminCategoriesPage";
 
 function AppRoutes() {
   return (
@@ -30,10 +38,63 @@ function AppRoutes() {
         <Route path="/cart" element={<CartPage />} />
 
         <Route
+          path="/admin/products/:id/edit"
+          element={
+            <ProtectedRoute>
+              <EditProductPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/admin/categories/new"
+          element={
+            <ProtectedRoute>
+              <CreateCategoryPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/admin/categories/:id/edit"
+          element={
+            <ProtectedRoute>
+              <EditCategoryPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/admin/categories"
+          element={
+            <ProtectedRoute allowedRoles={["ROLE_ADMIN"]}>
+              <AdminCategoriesPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/admin/products"
+          element={
+            <ProtectedRoute allowedRoles={["ROLE_ADMIN"]}>
+              <AdminProductsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
           path="/orders"
           element={
             <ProtectedRoute>
               <OrdersPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/admin/products/new"
+          element={
+            <ProtectedRoute>
+              <CreateProductPage />
             </ProtectedRoute>
           }
         />

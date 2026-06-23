@@ -21,7 +21,7 @@ public class AdminOrderController {
 
         return orderService.getAllOrders();
     }
-    
+
     @PutMapping("/{orderNumber}/status")
     public OrderResponse updateOrderStatus(@PathVariable String orderNumber,
                                            @Valid @RequestBody

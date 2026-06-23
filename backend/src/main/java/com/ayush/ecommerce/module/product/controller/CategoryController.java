@@ -8,12 +8,29 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 
 @RestController
 @RequestMapping("/api/v1/admin/categories")
 @RequiredArgsConstructor
 public class CategoryController {
     private final CategoryService categoryService;
+
+
+   @GetMapping
+    public List<CategoryResponse> getCategories() {
+
+        return categoryService.getAllCategories();
+    }
+
+    @GetMapping("/{id}")
+    public CategoryResponse getCategoryById(
+            @PathVariable Long id
+    ) {
+
+        return categoryService.getCategoryById(id);
+    }
 
     @PostMapping
     public CategoryResponse createCategory(
