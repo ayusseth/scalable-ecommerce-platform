@@ -40,6 +40,7 @@ function LoginPage() {
         userId: response.userId,
         name: response.name,
         email: response.email,
+        role: response.role,
       });
 
       alert("Login successful");
