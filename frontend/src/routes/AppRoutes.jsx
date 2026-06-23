@@ -23,6 +23,8 @@ import EditCategoryPage from "../pages/admin/EditCategoryPage";
 
 import AdminCategoriesPage from "../pages/admin/AdminCategoriesPage";
 
+import AdminUsersPage from "../pages/admin/AdminUsersPage";
+
 function AppRoutes() {
   return (
     <BrowserRouter>
@@ -42,6 +44,15 @@ function AppRoutes() {
           element={
             <ProtectedRoute>
               <EditProductPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/admin/users"
+          element={
+            <ProtectedRoute>
+              <AdminUsersPage />
             </ProtectedRoute>
           }
         />
