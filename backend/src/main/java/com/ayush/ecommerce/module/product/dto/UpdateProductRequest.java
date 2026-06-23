@@ -24,4 +24,6 @@ public class UpdateProductRequest {
     @Min(0)
     private Integer stockQuantity;
 
+    private String imageUrl;
+
 }

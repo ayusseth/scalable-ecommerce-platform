@@ -17,4 +17,6 @@ public class ProductResponse implements Serializable {
     private boolean active;
     private Long categoryId;
     private String categoryName;
+
+    private String imageUrl;
 }

@@ -26,4 +26,6 @@ public class CreateProductRequest {
     @NotNull
     @Min(0)
     private Integer stockQuantity;
+
+    private String imageUrl;
 }

@@ -47,6 +47,7 @@ public class ProductServiceImpl implements ProductService {
                 .stockQuantity(request.getStockQuantity())
                 .category(category)
                 .active(true)
+                .imageUrl(request.getImageUrl())
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .build();
@@ -93,6 +94,7 @@ public class ProductServiceImpl implements ProductService {
                 .description(product.getDescription())
                 .price(product.getPrice())
                 .stockQuantity(product.getStockQuantity())
+                .imageUrl(product.getImageUrl())
                 .active(product.isActive())
                 .categoryId(product.getCategory().getId()                )
                 .categoryName(product.getCategory().getName()                )
@@ -115,6 +117,10 @@ public class ProductServiceImpl implements ProductService {
         product.setDescription(request.getDescription());
         product.setPrice(request.getPrice());
         product.setStockQuantity(request.getStockQuantity());
+
+        product.setImageUrl(
+                request.getImageUrl()
+        );
 
         product.setUpdatedAt(
                 LocalDateTime.now()
@@ -148,6 +154,7 @@ public class ProductServiceImpl implements ProductService {
                 .description(product.getDescription())
                 .price(product.getPrice())
                 .stockQuantity(product.getStockQuantity())
+                .imageUrl(product.getImageUrl())
                 .active(product.isActive())
                 .categoryId(product.getCategory().getId())
                 .categoryName(product.getCategory().getName())
