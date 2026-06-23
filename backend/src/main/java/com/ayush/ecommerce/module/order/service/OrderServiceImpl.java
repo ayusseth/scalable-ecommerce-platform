@@ -42,7 +42,11 @@ public class OrderServiceImpl implements OrderService{
     @Override
     @Transactional
     @CacheEvict(
-            value = "dashboard",
+            value = {
+                    "dashboard",
+                    "products",
+                    "product"
+            },
             allEntries = true
     )
     public OrderResponse createOrder(
@@ -338,7 +342,11 @@ public class OrderServiceImpl implements OrderService{
     @Override
     @Transactional
     @CacheEvict(
-            value = "dashboard",
+            value = {
+                    "dashboard",
+                    "products",
+                    "product"
+            },
             allEntries = true
     )
     public OrderResponse cancelOrder(String userEmail, String orderNumber, CancelOrderRequest request) {

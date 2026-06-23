@@ -374,33 +374,6 @@ public class PaymentServiceImpl implements PaymentService {
                 LocalDateTime.now()
         );
 
-        for (OrderItem item : order.getItems()) {
-
-            Product product = item.getProduct();
-
-            int availableStock =
-                    product.getStockQuantity();
-
-            int orderedQuantity =
-                    item.getQuantity();
-
-            if (availableStock < orderedQuantity) {
-
-                throw new IllegalStateException(
-                        "Insufficient stock for product: "
-                                + product.getName()
-                );
-            }
-
-            product.setStockQuantity(
-                    availableStock - orderedQuantity
-            );
-
-            productRepository.save(product);
-
-
-        }
-
         if (order.getItems() == null || order.getItems().isEmpty()) {
             throw new IllegalStateException(
                     "Order items not found"
