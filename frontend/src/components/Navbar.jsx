@@ -60,6 +60,10 @@ function Navbar() {
 
           <Link to="/orders">Orders</Link>
 
+          {user?.role === "ROLE_ADMIN" && (
+            <Link to="/admin/dashboard">Admin Panel</Link>
+          )}
+
           {!isAuthenticated ? (
             <>
               <Link to="/login">Login</Link>
@@ -91,12 +95,7 @@ function Navbar() {
                 >
                   <Link
                     to="/profile"
-                    className="
-        block
-        px-4
-        py-2
-        hover:bg-gray-100
-      "
+                    className=" block px-4  py-2   hover:bg-gray-100"
                   >
                     My Profile
                   </Link>
@@ -124,6 +123,60 @@ function Navbar() {
                   >
                     Addresses
                   </Link>
+
+                  {user?.role === "ROLE_ADMIN" && (
+                    <>
+                      <hr />
+
+                      <Link
+                        to="/admin/dashboard"
+                        className="
+        block
+        px-4
+        py-2
+        hover:bg-gray-100
+      "
+                      >
+                        Admin Dashboard
+                      </Link>
+
+                      <Link
+                        to="/admin/products"
+                        className="
+        block
+        px-4
+        py-2
+        hover:bg-gray-100
+      "
+                      >
+                        Manage Products
+                      </Link>
+
+                      <Link
+                        to="/admin/categories"
+                        className="
+        block
+        px-4
+        py-2
+        hover:bg-gray-100
+      "
+                      >
+                        Manage Categories
+                      </Link>
+
+                      <Link
+                        to="/admin/orders"
+                        className="
+        block
+        px-4
+        py-2
+        hover:bg-gray-100
+      "
+                      >
+                        Manage Orders
+                      </Link>
+                    </>
+                  )}
 
                   <button
                     onClick={handleLogout}
