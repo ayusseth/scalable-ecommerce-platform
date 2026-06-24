@@ -444,6 +444,7 @@ public class OrderServiceImpl implements OrderService{
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<OrderResponse> searchOrders(
             String keyword
     ) {
@@ -456,6 +457,8 @@ public class OrderServiceImpl implements OrderService{
                 .map(this::mapToResponse)
                 .toList();
     }
+
+
 
     private OrderResponse mapToResponse(
             Order order
@@ -520,5 +523,20 @@ public class OrderServiceImpl implements OrderService{
 
             case DELIVERED, CANCELLED -> false;
         };
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<OrderResponse> getOrdersByStatus(
+            OrderStatus status
+    ) {
+
+        return orderRepository
+                .findByStatusOrderByCreatedAtDesc(
+                        status
+                )
+                .stream()
+                .map(this::mapToResponse)
+                .toList();
     }
 }

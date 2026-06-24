@@ -4,6 +4,8 @@ import com.ayush.ecommerce.module.order.dto.CancelOrderRequest;
 import com.ayush.ecommerce.module.order.dto.CreateOrderRequest;
 import com.ayush.ecommerce.module.order.dto.OrderResponse;
 import com.ayush.ecommerce.module.order.dto.UpdateOrderStatusRequest;
+import com.ayush.ecommerce.module.order.entity.OrderStatus;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -28,5 +30,8 @@ public interface OrderService {
     );
 
 
-
+    @Transactional(readOnly = true)
+    List<OrderResponse> getOrdersByStatus(
+            OrderStatus status
+    );
 }

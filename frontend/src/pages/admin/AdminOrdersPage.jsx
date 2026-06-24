@@ -5,6 +5,7 @@ import MainLayout from "../../layouts/MainLayout";
 import {
   getAllOrders,
   updateOrderStatus,
+  getOrdersByStatus,
 } from "../../services/adminOrderService";
 
 import { searchOrders } from "../../services/adminOrderService";
@@ -15,12 +16,39 @@ function AdminOrdersPage() {
   const [loading, setLoading] = useState(true);
 
   const [keyword, setKeyword] = useState("");
+
+  const [statusFilter, setStatusFilter] = useState("ALL");
+
+  const handleStatusFilter = async (status) => {
+    setStatusFilter(status);
+
+    try {
+      if (status === "ALL") {
+        loadOrders();
+
+        return;
+      }
+
+      const data = await getOrdersByStatus(status);
+
+      setOrders(data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   const handleSearch = async (value) => {
     setKeyword(value);
 
     try {
       if (!value.trim()) {
-        loadOrders();
+        if (statusFilter === "ALL") {
+          loadOrders();
+        } else {
+          const data = await getOrdersByStatus(statusFilter);
+
+          setOrders(data);
+        }
 
         return;
       }
@@ -55,7 +83,13 @@ function AdminOrdersPage() {
 
       alert("Order updated");
 
-      loadOrders();
+      if (statusFilter === "ALL") {
+        loadOrders();
+      } else {
+        const data = await getOrdersByStatus(statusFilter);
+
+        setOrders(data);
+      }
     } catch (error) {
       console.error(error);
 
@@ -72,24 +106,68 @@ function AdminOrdersPage() {
   }
 
   return (
-    <MainLayout>
-      <div className="max-w-7xl mx-auto p-10">
-        <h1 className="text-4xl font-bold mb-8">Manage Orders</h1>
+  <MainLayout>
+    <div className="max-w-7xl mx-auto p-10">
 
-        <div className="mb-6">
-          <input
-            type="text"
-            placeholder="Search Order Number"
-            value={keyword}
-            onChange={(e) => handleSearch(e.target.value)}
-            className="
+<h1 className="text-4xl font-bold mb-8">
+  Manage Orders
+</h1>
+
+<div className="flex gap-4 mb-6">
+
+  <input
+    type="text"
+    placeholder="Search Order, Customer or Email"
+    value={keyword}
+    onChange={(e) => handleSearch(e.target.value)}
+    className="
       border
       p-3
       rounded
-      w-full
+      flex-1
     "
-          />
-        </div>
+  />
+
+  <select
+    value={statusFilter}
+    onChange={(e) => handleStatusFilter(e.target.value)}
+    className="
+      border
+      p-3
+      rounded
+      w-64
+    "
+  >
+    <option value="ALL">
+      All Orders
+    </option>
+
+    <option value="PENDING">
+      Pending
+    </option>
+
+    <option value="PAID">
+      Paid
+    </option>
+
+    <option value="PROCESSING">
+      Processing
+    </option>
+
+    <option value="SHIPPED">
+      Shipped
+    </option>
+
+    <option value="DELIVERED">
+      Delivered
+    </option>
+
+    <option value="CANCELLED">
+      Cancelled
+    </option>
+  </select>
+
+</div>
 
         <div className="space-y-4">
           {orders.map((order) => (
@@ -106,8 +184,6 @@ function AdminOrdersPage() {
                 </div>
 
                 <div>
-                  {/* <h2 className="font-bold text-xl">{order.orderNumber}</h2> */}
-
                   <p>Customer: {order.customerName}</p>
 
                   <p>Email: {order.customerEmail}</p>

@@ -3,6 +3,7 @@ package com.ayush.ecommerce.module.order.controller;
 
 import com.ayush.ecommerce.module.order.dto.OrderResponse;
 import com.ayush.ecommerce.module.order.dto.UpdateOrderStatusRequest;
+import com.ayush.ecommerce.module.order.entity.OrderStatus;
 import com.ayush.ecommerce.module.order.service.OrderService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +23,15 @@ public class AdminOrderController {
         return orderService.getAllOrders();
     }
 
+    @GetMapping("/status")
+    public List<OrderResponse> getOrdersByStatus(
+            @RequestParam OrderStatus status
+    ) {
+
+        return orderService.getOrdersByStatus(
+                status
+        );
+    }
     @GetMapping("/search")
     public List<OrderResponse> searchOrders(
             @RequestParam String keyword
