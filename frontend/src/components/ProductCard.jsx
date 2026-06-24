@@ -5,6 +5,21 @@ function ProductCard({ product }) {
 
   return (
     <div className="border rounded-lg p-4 shadow hover:shadow-lg transition">
+      <img
+        src={
+          product.imageUrl ||
+          "https://via.placeholder.com/400x300?text=No+Image"
+        }
+        alt={product.name}
+        className="
+          w-full
+          h-56
+          object-cover
+          rounded
+          mb-4
+        "
+      />
+
       <h2 className="text-xl font-semibold">{product.name}</h2>
 
       <p className="mt-2 text-gray-600">{product.description}</p>
@@ -17,7 +32,14 @@ function ProductCard({ product }) {
 
       <button
         onClick={() => addToCart(product)}
-        className="mt-4 w-full bg-blue-600 text-white py-2 rounded"
+        className="
+          mt-4
+          w-full
+          bg-blue-600
+          text-white
+          py-2
+          rounded
+        "
       >
         Add To Cart
       </button>
