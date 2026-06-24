@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route  } from "react-router-dom";
 
 import HomePage from "../pages/home/HomePage";
 import LoginPage from "../pages/auth/LoginPage";
@@ -24,6 +24,8 @@ import EditCategoryPage from "../pages/admin/EditCategoryPage";
 import AdminCategoriesPage from "../pages/admin/AdminCategoriesPage";
 
 import AdminUsersPage from "../pages/admin/AdminUsersPage";
+
+
 
 function AppRoutes() {
   return (
