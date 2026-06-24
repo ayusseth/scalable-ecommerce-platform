@@ -174,6 +174,9 @@ public class OrderServiceImpl implements OrderService{
                 .status(savedOrder.getStatus())
                 .totalAmount(savedOrder.getTotalAmount())
                 .items(itemResponses)
+                .customerName(order.getUser().getName())
+                .customerEmail(order.getUser().getEmail())
+                .createdAt(order.getCreatedAt())
                 .build();
     }
 
@@ -219,6 +222,15 @@ public class OrderServiceImpl implements OrderService{
                             .status(order.getStatus())
                             .totalAmount(order.getTotalAmount())
                             .items(itemResponses)
+                            .customerName(
+                                    order.getUser().getName()
+                            )
+                            .customerEmail(
+                                    order.getUser().getEmail()
+                            )
+                            .createdAt(
+                                    order.getCreatedAt()
+                            )
                             .build();
                 })
                 .toList();
@@ -266,6 +278,15 @@ public class OrderServiceImpl implements OrderService{
                             .status(order.getStatus())
                             .totalAmount(order.getTotalAmount())
                             .items(itemResponses)
+                            .customerName(
+                                    order.getUser().getName()
+                            )
+                            .customerEmail(
+                                    order.getUser().getEmail()
+                            )
+                            .createdAt(
+                                    order.getCreatedAt()
+                            )
                             .build();
                 })
                 .toList();
@@ -301,6 +322,15 @@ public class OrderServiceImpl implements OrderService{
                 .status(order.getStatus())
                 .totalAmount(order.getTotalAmount())
                 .items(itemResponses)
+                .customerName(
+                        order.getUser().getName()
+                )
+                .customerEmail(
+                        order.getUser().getEmail()
+                )
+                .createdAt(
+                        order.getCreatedAt()
+                )
                 .build();
 
     }
@@ -335,6 +365,15 @@ public class OrderServiceImpl implements OrderService{
                 .status(savedOrder.getStatus())
                 .totalAmount(savedOrder.getTotalAmount())
                 .items(List.of())
+                .customerName(
+                        order.getUser().getName()
+                )
+                .customerEmail(
+                        order.getUser().getEmail()
+                )
+                .createdAt(
+                        order.getCreatedAt()
+                )
                 .build();
 
     }
@@ -391,8 +430,80 @@ public class OrderServiceImpl implements OrderService{
                 .status(savedOrder.getStatus())
                 .totalAmount(savedOrder.getTotalAmount())
                 .items(itemResponses)
+                .customerName(
+                        order.getUser().getName()
+                )
+                .customerEmail(
+                        order.getUser().getEmail()
+                )
+                .createdAt(
+                        order.getCreatedAt()
+                )
                 .build();
 
+    }
+
+    @Override
+    public List<OrderResponse> searchOrders(
+            String keyword
+    ) {
+
+        return orderRepository
+                .findByOrderNumberContainingIgnoreCaseOrderByCreatedAtDesc(
+                        keyword
+                )
+                .stream()
+                .map(this::mapToResponse)
+                .toList();
+    }
+
+    private OrderResponse mapToResponse(
+            Order order
+    ) {
+
+        List<OrderItemResponse> itemResponses =
+                orderItemRepository
+                        .findByOrderOrderNumber(
+                                order.getOrderNumber()
+                        )
+                        .stream()
+                        .map(item ->
+                                OrderItemResponse.builder()
+                                        .productId(
+                                                item.getProduct().getId()
+                                        )
+                                        .productName(
+                                                item.getProduct().getName()
+                                        )
+                                        .quantity(
+                                                item.getQuantity()
+                                        )
+                                        .unitPrice(
+                                                item.getUnitPrice()
+                                        )
+                                        .subtotal(
+                                                item.getSubtotal()
+                                        )
+                                        .build()
+                        )
+                        .toList();
+
+        return OrderResponse.builder()
+                .orderId(order.getId())
+                .orderNumber(order.getOrderNumber())
+                .status(order.getStatus())
+                .totalAmount(order.getTotalAmount())
+                .items(itemResponses)
+                .customerName(
+                        order.getUser().getName()
+                )
+                .customerEmail(
+                        order.getUser().getEmail()
+                )
+                .createdAt(
+                        order.getCreatedAt()
+                )
+                .build();
     }
 
     private boolean isValidTransition(OrderStatus currentStatus, OrderStatus newStatus){

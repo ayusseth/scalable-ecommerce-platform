@@ -21,3 +21,15 @@ export const updateOrderStatus = async (
 
   return response.data;
 };
+
+export const searchOrders = async (
+  keyword
+) => {
+
+  const response =
+    await axiosClient.get(
+      `/admin/orders/search?keyword=${keyword}`
+    );
+
+  return response.data;
+};

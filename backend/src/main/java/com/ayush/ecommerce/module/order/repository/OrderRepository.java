@@ -25,4 +25,8 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     BigDecimal getTotalRevenue();
 
     long countByStatus(OrderStatus status);
+
+    List<Order> findByOrderNumberContainingIgnoreCaseOrderByCreatedAtDesc(
+            String keyword
+    );
 }

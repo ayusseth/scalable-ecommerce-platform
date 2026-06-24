@@ -23,6 +23,9 @@ public interface OrderService {
 
     OrderResponse cancelOrder(String userEmail, String orderNumber, CancelOrderRequest request);
 
+    List<OrderResponse> searchOrders(
+            String keyword
+    );
 
 
 

@@ -22,6 +22,16 @@ public class AdminOrderController {
         return orderService.getAllOrders();
     }
 
+    @GetMapping("/search")
+    public List<OrderResponse> searchOrders(
+            @RequestParam String keyword
+    ) {
+
+        return orderService.searchOrders(
+                keyword
+        );
+    }
+
     @PutMapping("/{orderNumber}/status")
     public OrderResponse updateOrderStatus(@PathVariable String orderNumber,
                                            @Valid @RequestBody
