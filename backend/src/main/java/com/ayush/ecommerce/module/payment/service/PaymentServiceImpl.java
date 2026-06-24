@@ -193,13 +193,25 @@ public class PaymentServiceImpl implements PaymentService {
             );
         }
 
-        paymentRepository
-                .findByOrderId(order.getId())
-                .ifPresent(payment -> {
-                    throw new PaymentAlreadyExistsException(
-                            "Payment already exists"
-                    );
-                });
+        Payment existingPayment =
+                paymentRepository
+                        .findByOrderId(order.getId())
+                        .orElse(null);
+
+        if (existingPayment != null &&
+                existingPayment.getStatus() ==
+                        PaymentStatus.SUCCESS) {
+
+            throw new PaymentAlreadyExistsException(
+                    "Payment already completed"
+            );
+        }
+
+        if (existingPayment != null) {
+
+            paymentRepository.delete(existingPayment);
+            paymentRepository.flush();
+        }
 
         try {
 
