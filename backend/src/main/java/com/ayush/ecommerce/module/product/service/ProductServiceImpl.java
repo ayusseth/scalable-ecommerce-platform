@@ -162,38 +162,14 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Page<ProductResponse> getProducts(
-            int page,
-            int size,
-            String sortBy,
-            String direction
-    ) {
-
-        System.out.println("========== PRODUCT DEBUG ==========");
-
-        System.out.println("findAll count = "
-                + productRepository.findAll().size());
-
-        System.out.println("findByActiveTrue count = "
-                + productRepository.findByActiveTrue(
-                PageRequest.of(0,100)
-        ).getTotalElements());
-
-        productRepository.findAll()
-                .forEach(product ->
-                        System.out.println(
-                                product.getId()
-                                        + " "
-                                        + product.getName()
-                                        + " active="
-                                        + product.isActive()
-                        )
-                );
-
+    @Cacheable(
+            value = "products",
+            key = "#page + '-' + #size + '-' + #sortBy + '-' + #direction"
+    )
+    public Page<ProductResponse> getProducts(int page, int size, String sortBy, String direction) {
         Sort sort = direction.equalsIgnoreCase("desc")
                 ? Sort.by(sortBy).descending()
                 : Sort.by(sortBy).ascending();
-
         Pageable pageable = PageRequest.of(page, size, sort);
 
         return productRepository
