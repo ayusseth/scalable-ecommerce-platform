@@ -1,5 +1,7 @@
 import axios from "axios";
-console.log(import.meta.env.VITE_API_BASE_URL);
+
+console.log("VITE_API_BASE_URL =", import.meta.env.VITE_API_BASE_URL);
+
 const axiosClient = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
   headers: {
@@ -7,19 +9,16 @@ const axiosClient = axios.create({
   },
 });
 
-axiosClient.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem("token");
+axiosClient.interceptors.request.use((config) => {
+  console.log("Final Request URL:", config.baseURL + config.url);
 
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
+  const token = localStorage.getItem("token");
 
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  },
-);
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+
+  return config;
+});
 
 export default axiosClient;
