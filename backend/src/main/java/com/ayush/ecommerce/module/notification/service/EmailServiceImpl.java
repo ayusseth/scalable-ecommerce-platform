@@ -19,13 +19,26 @@ public class EmailServiceImpl
             String body
     ) {
 
-        SimpleMailMessage message =
-                new SimpleMailMessage();
+        try {
 
-        message.setTo(to);
-        message.setSubject(subject);
-        message.setText(body);
+            System.out.println("Sending email to: " + to);
 
-        mailSender.send(message);
+            SimpleMailMessage message = new SimpleMailMessage();
+
+            message.setTo(to);
+            message.setSubject(subject);
+            message.setText(body);
+
+            mailSender.send(message);
+
+            System.out.println("Email sent successfully.");
+
+        } catch (Exception e) {
+
+            System.out.println("EMAIL ERROR:");
+            e.printStackTrace();
+
+            throw e;
+        }
     }
 }
