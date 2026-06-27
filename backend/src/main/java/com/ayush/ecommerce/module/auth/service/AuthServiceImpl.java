@@ -17,6 +17,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Set;
@@ -36,6 +37,7 @@ public class AuthServiceImpl implements AuthService{
     private final EmailService emailService;
 
     @Override
+    @Transactional
     public RegisterResponse register(RegisterRequest request) {
 
         if(userRepository.existsByEmail(request.getEmail())){
