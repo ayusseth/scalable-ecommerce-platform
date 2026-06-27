@@ -70,19 +70,19 @@ public class AuthServiceImpl implements AuthService{
                 otpService.generateOtp(
                         savedUser.getEmail()
                 );
-
-        emailService.sendEmail(
-                savedUser.getEmail(),
-                "Email Verification OTP",
-                """
-                Your verification code is:
-        
-                %s
-        
-                This OTP will expire in 5 minutes.
-                """
-                        .formatted(otp)
-        );
+//
+//        emailService.sendEmail(
+//                savedUser.getEmail(),
+//                "Email Verification OTP",
+//                """
+//                Your verification code is:
+//
+//                %s
+//
+//                This OTP will expire in 5 minutes.
+//                """
+//                        .formatted(otp)
+//        );
 
         return RegisterResponse.builder()
                 .userId(savedUser.getId())
