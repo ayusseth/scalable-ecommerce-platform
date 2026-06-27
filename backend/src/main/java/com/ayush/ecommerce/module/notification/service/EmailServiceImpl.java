@@ -29,9 +29,9 @@ public class EmailServiceImpl
             message.setSubject(subject);
             message.setText(body);
 
-            mailSender.send(message);
+            throw new RuntimeException("EMAIL SERVICE REACHED");
 
-            System.out.println("Email sent successfully.");
+            
 
         } catch (Exception e) {
 

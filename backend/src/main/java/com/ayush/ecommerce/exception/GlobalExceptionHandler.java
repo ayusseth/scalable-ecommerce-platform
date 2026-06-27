@@ -206,4 +206,17 @@ public class GlobalExceptionHandler
                                 .build()
                 );
     }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<?> handleException(Exception ex) {
+
+        ex.printStackTrace();
+
+        return ResponseEntity.status(500).body(
+                Map.of(
+                        "message", ex.getClass().getName(),
+                        "error", ex.getMessage()
+                )
+        );
+    }
 }
