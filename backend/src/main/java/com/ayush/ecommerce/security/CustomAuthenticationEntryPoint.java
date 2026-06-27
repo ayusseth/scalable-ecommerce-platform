@@ -21,31 +21,23 @@ public class CustomAuthenticationEntryPoint
             AuthenticationException authException
     ) {
 
+        authException.printStackTrace();   // <-- ADD THIS
+
         try {
 
-            response.setStatus(
-                    HttpServletResponse.SC_UNAUTHORIZED
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType("application/json");
+
+            Map<String, Object> body = Map.of(
+                    "status", 401,
+                    "message", authException.getMessage(), // <-- CHANGE THIS
+                    "timestamp", LocalDateTime.now().toString()
             );
 
-            response.setContentType(
-                    "application/json"
-            );
-
-            Map<String, Object> body =
-                    Map.of(
-                            "status", 401,
-                            "message", "Invalid email or password",
-                            "timestamp", LocalDateTime.now().toString()
-                    );
-
-            new ObjectMapper()
-                    .writeValue(
-                            response.getOutputStream(),
-                            body
-                    );
+            new ObjectMapper().writeValue(response.getOutputStream(), body);
 
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
     }
 }
