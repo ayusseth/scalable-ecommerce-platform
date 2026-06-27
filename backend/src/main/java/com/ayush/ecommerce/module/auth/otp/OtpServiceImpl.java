@@ -18,8 +18,8 @@ public class OtpServiceImpl implements OtpService {
     public String generateOtp(String email) {
         String otp = String.format("%06d", random.nextInt(1000000));
 
-//        redisTemplate.opsForValue()
-//                .set("otp:"+email, otp, Duration.ofMinutes(5));
+        redisTemplate.opsForValue()
+                .set("otp:"+email, otp, Duration.ofMinutes(5));
         return otp;
     }
 
