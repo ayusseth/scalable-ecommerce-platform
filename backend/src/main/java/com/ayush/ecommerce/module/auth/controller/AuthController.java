@@ -29,7 +29,7 @@ public class AuthController
     public RegisterResponse register(
             @Valid @RequestBody RegisterRequest request
             ){
-
+        System.out.println("===== REGISTER CONTROLLER HIT =====");
         return authService.register(request);
     }
 
